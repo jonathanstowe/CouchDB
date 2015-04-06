@@ -1,0 +1,18 @@
+{
+  "perl" : "v6",
+  "name" : "CouchDB",
+  "description" : "Simple interface to CouchDB",
+  "version" : "v0.0.1",
+  "build-depends" : [ ],
+  "test-depends" : [ ],
+  "depends" : ['HTTP::UserAgent', 'JSON::Tiny', 'URI' ],
+  "provides" : {
+     "CouchDB":  "lib/CouchDB.pm6",
+     "CouchDB::Server":  "lib/CouchDB/Server.pm6",
+     "CouchDB::Server::Vendor":   "lib/CouchDB/Server/Vendor.pm6",
+     "CouchDB::UserAgent":   "lib/CouchDB/UserAgent.pm6"
+  },
+  "support" : {
+    "source" : "git://github.com/jonathanstowe/CouchDB.git"
+  }
+}
