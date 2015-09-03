@@ -1,3 +1,5 @@
+use v6;
+
 class CouchDB:auth<github:jonathanstowe>:ver<v0.0.1> {
    use CouchDB::UserAgent;
    use JSON::Tiny;
@@ -13,3 +15,4 @@ class CouchDB:auth<github:jonathanstowe>:ver<v0.0.1> {
    }
 
 }
+# vim: expandtab shiftwidth=4 ft=perl6

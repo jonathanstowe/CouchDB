@@ -18,3 +18,4 @@ class CouchDB::Server {
       self.new(from-json $json);
    }
 }
+# vim: expandtab shiftwidth=4 ft=perl6
