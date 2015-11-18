@@ -13,7 +13,6 @@
   "provides" : {
      "CouchDB":  "lib/CouchDB.pm",
      "CouchDB::Server":  "lib/CouchDB/Server.pm",
-     "CouchDB::Server::Vendor":   "lib/CouchDB/Server/Vendor.pm",
      "CouchDB::UserAgent":   "lib/CouchDB/UserAgent.pm"
   },
   "support" : {

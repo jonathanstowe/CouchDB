@@ -1,21 +1,21 @@
 use v6;
 
-use CouchDB::Server::Vendor;
-use JSON::Tiny;
+use JSON::Class;
+use JSON::Unmarshal;
+use JSON::Marshal;
 
-class CouchDB::Server {
-   has $.couchdb;
-   has $.uuid;
-   has $.version;
-   has $.vendor;
-   multi method new(%data is copy) {
-      %data<vendor> = CouchDB::Server::Vendor.new(%data<vendor>);
-      %data<version> = Version.new(%data<version>);
-      self.bless(|%data);
-   }
+class CouchDB::Server does JSON::Class {
+    class Vendor {
+        has Version $.version is unmarshalled-by('new');
+        has Str $.name;
+    }
+    has Str     $.couchdb;
+    has Str     $.uuid;
+    has Version $.version is unmarshalled-by('new');
+    has Vendor  $.vendor;
 
-   multi method new(Str $json) {
-      self.new(from-json $json);
-   }
+    multi method new(Str $json) {
+        self.from-json($json);
+    }
 }
 # vim: expandtab shiftwidth=4 ft=perl6
