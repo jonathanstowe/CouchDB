@@ -5,7 +5,11 @@
   "version" : "v0.0.1",
   "build-depends" : [ ],
   "test-depends" : [ "Test::META" ],
-  "depends" : ["HTTP::UserAgent", "JSON::Tiny", "URI" ],
+  "depends" : [
+      "HTTP::UserAgent", 
+      "JSON::Class", 
+      "URI" 
+  ],
   "provides" : {
      "CouchDB":  "lib/CouchDB.pm",
      "CouchDB::Server":  "lib/CouchDB/Server.pm",
