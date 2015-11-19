@@ -4,11 +4,12 @@
   "description" : "Simple interface to CouchDB",
   "version" : "v0.0.1",
   "build-depends" : [ ],
-  "test-depends" : [ "Test::META" ],
+  "test-depends" : [ "Test::META", "CheckSocket" ],
   "depends" : [
       "HTTP::UserAgent", 
       "JSON::Class", 
-      "URI" 
+      "URI",
+      "URI::Template" 
   ],
   "provides" : {
      "CouchDB":  "lib/CouchDB.pm",
