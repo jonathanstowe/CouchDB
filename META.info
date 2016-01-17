@@ -1,5 +1,5 @@
 {
-  "perl" : "v6",
+  "perl" : "6.c",
   "name" : "CouchDB",
   "description" : "Simple interface to CouchDB",
   "version" : "v0.0.1",
