@@ -17,6 +17,10 @@ class CouchDB::Database does JSON::Class {
     has DateTime    $.instance_start_time is unmarshalled-by(&microsecs-to-dt);
     has Int         $.update_seq;
     has Str         $.db_name;
+
+	our token valid-db-name {
+		^<[a .. z]><[a .. z0 .. 9_$()+/-]>*$
+	}
 }
 
 # vim: expandtab shiftwidth=4 ft=perl6
