@@ -1,6 +1,8 @@
-# CouchDB
+# Sofa
 
-Simple Perl 6 interface for CouchDB
+Perl 6 interface for CouchDB
+
+## Synopsis
 
 ## Description
 
