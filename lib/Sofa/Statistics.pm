@@ -1,7 +1,7 @@
 use JSON::Class;
 use JSON::Name;
 use JSON::Unmarshal;
-class CouchDB::Statistics does JSON::Class {
+class Sofa::Statistics does JSON::Class {
 
     sub rat-safe($value) returns Rat {
         my Rat $ret;

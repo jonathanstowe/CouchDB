@@ -2,7 +2,7 @@ use v6;
 use HTTP::UserAgent;
 use URI::Template;
 
-class CouchDB::UserAgent is HTTP::UserAgent {
+class Sofa::UserAgent is HTTP::UserAgent {
     has Str  $.host = 'localhost';
     has Int  $.port = 5984;
     has Bool $.secure = False;

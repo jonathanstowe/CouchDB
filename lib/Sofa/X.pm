@@ -1,6 +1,6 @@
 use v6;
 
-class CouchDB::X is Exception {
+class Sofa::X is Exception {
 
 }
 

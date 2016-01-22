@@ -1,7 +1,7 @@
 use JSON::Class;
 use JSON::Name;
 
-class CouchDB::Config does JSON::Class {
+class Sofa::Config does JSON::Class {
     class Log does JSON::Class {
         has Str $.file;
         has Str $.include_sasl;

@@ -1,7 +1,7 @@
 {
   "perl" : "6.c",
-  "name" : "CouchDB",
-  "description" : "Simple interface to CouchDB",
+  "name" : "Sofa",
+  "description" : "Simple interface to Sofa",
   "version" : "0.0.1",
   "build-depends" : [ ],
   "test-depends" : [ "Test::META", "CheckSocket" ],
@@ -12,12 +12,12 @@
       "URI::Template" 
   ],
   "provides" : {
-     "CouchDB":  "lib/CouchDB.pm",
-     "CouchDB::Server":  "lib/CouchDB/Server.pm",
-     "CouchDB::UserAgent":   "lib/CouchDB/UserAgent.pm"
+     "Sofa":  "lib/Sofa.pm",
+     "Sofa::Server":  "lib/Sofa/Server.pm",
+     "Sofa::UserAgent":   "lib/Sofa/UserAgent.pm"
   },
   "support" : {
-    "source" : "git://github.com/jonathanstowe/CouchDB.git"
+    "source" : "git://github.com/jonathanstowe/Sofa.git"
   },
-  "source-url" : "git://github.com/jonathanstowe/CouchDB.git"
+  "source-url" : "git://github.com/jonathanstowe/Sofa.git"
 }

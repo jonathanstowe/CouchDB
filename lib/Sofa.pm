@@ -1,17 +1,17 @@
 use v6;
 
-class CouchDB:auth<github:jonathanstowe>:ver<v0.0.1> {
-   use CouchDB::UserAgent;
+class Sofa:auth<github:jonathanstowe>:ver<v0.0.1> {
+   use Sofa::UserAgent;
    use JSON::Tiny;
 
-   has CouchDB::UserAgent $.ua is rw;
+   has Sofa::UserAgent $.ua is rw;
    has Int  $.port is rw = 5984;
    has Str  $.host is rw = 'localhost';
    has Bool $.secure = False;
 
-   method ua() returns CouchDB::UserAgent is rw {
+   method ua() returns Sofa::UserAgent is rw {
       if not $!ua.defined {
-         $!ua = CouchDB::UserAgent.new(host => $!host, port => $!port, secure => $!secure);
+         $!ua = Sofa::UserAgent.new(host => $!host, port => $!port, secure => $!secure);
       }
       $!ua;
    }

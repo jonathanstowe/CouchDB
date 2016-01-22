@@ -4,7 +4,7 @@ use JSON::Class;
 use JSON::Unmarshal;
 use JSON::Marshal;
 
-class CouchDB::Server does JSON::Class {
+class Sofa::Server does JSON::Class {
     class Vendor {
         has Version $.version is unmarshalled-by('new');
         has Str $.name;

@@ -6,18 +6,18 @@ use lib "lib";
 
 use Test;
 
-use-ok('CouchDB');
+use-ok('Sofa');
 
-use CouchDB;
+use Sofa;
 
-ok(my $obj = CouchDB.new, "create new object");
+ok(my $obj = Sofa.new, "create new object");
 
-isa-ok($obj, CouchDB, "right sort of thing");
+isa-ok($obj, Sofa, "right sort of thing");
 
 ok($obj.^can('ua'), 'can ua');
 
 isa-ok($obj.ua, HTTP::UserAgent, "ua is a HTTP::UserAgent");
-isa-ok($obj.ua, CouchDB::UserAgent, "ua is a CouchDB::UserAgent");
+isa-ok($obj.ua, Sofa::UserAgent, "ua is a Sofa::UserAgent");
 
 is($obj.port, 5984, "got default port");
 is($obj.host, 'localhost', 'got default host');
@@ -28,7 +28,7 @@ is($obj.ua.secure, False, 'got default secure on ua');
 is($obj.ua.base-url, 'http://localhost:5984/{+path}', "got correct base-url");
 isa-ok($obj.ua.base-template, URI::Template, "got the template");
 
-ok($obj = CouchDB.new(port => 1234, host => 'foo.com', secure => True), "create with port");
+ok($obj = Sofa.new(port => 1234, host => 'foo.com', secure => True), "create with port");
 is($obj.port, 1234, "got set port");
 is($obj.host, 'foo.com', 'got set host');
 is($obj.secure, True, 'got set secure');

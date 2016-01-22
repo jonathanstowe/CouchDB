@@ -2,7 +2,7 @@ use JSON::Class;
 use JSON::Name;
 use JSON::Unmarshal;
 
-class CouchDB::Database does JSON::Class {
+class Sofa::Database does JSON::Class {
     sub microsecs-to-dt($val) returns DateTime {
         DateTime.new(($val.Numeric/1000000).Int);
     }
