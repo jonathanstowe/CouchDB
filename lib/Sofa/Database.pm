@@ -88,7 +88,7 @@ class Sofa::Database does JSON::Class {
         my $db;
 
         if self.is-valid-name($name) {
-            my $response = $ua.put(path => $name, content => '');
+            my $response = $ua.put(path => $name);
             if $response.is-success {
                 $db = self.fetch(:$name, :$ua);
             }
