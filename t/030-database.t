@@ -13,7 +13,7 @@ my $db;
 
 lives-ok { $db = Sofa::Database.from-json($json) }, "create Sofa::Database from JSON";
 
-is $db.db_name, '_users', "got the right db_name";
+is $db.name, '_users', "got the right db_name (using the name alias)";
 isa-ok $db.instance_start_time, DateTime, "and instance_start_time is a DT";
 
 done-testing;
