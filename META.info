@@ -2,7 +2,7 @@
   "perl" : "6.c",
   "name" : "CouchDB",
   "description" : "Simple interface to CouchDB",
-  "version" : "v0.0.1",
+  "version" : "0.0.1",
   "build-depends" : [ ],
   "test-depends" : [ "Test::META", "CheckSocket" ],
   "depends" : [
