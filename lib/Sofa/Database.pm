@@ -22,7 +22,6 @@ class Sofa::Database does JSON::Class {
 
     has Sofa::UserAgent $.ua is rw;
 
-
     class X::InvalidName is Exception {
         has $.name;
         method message() returns Str {
@@ -61,6 +60,27 @@ class Sofa::Database does JSON::Class {
         so ($name ~~ /<valid-db-name>/);
     }
 
+    method !get-exception(Int() $code, Str $name, Str $what) {
+        given $code {
+            when 400 {
+                X::InvalidName.new(:$name);
+            }
+            when 401 {
+                X::NotAuthorised.new(:$name, :$what);
+            }
+            when 404 {
+                X::NoDatabase.new(:$name);
+            }
+            when 412 {
+                # This is not actually right as 412 is more context sensitive
+                X::DatabaseExists.new(:$name);
+            }
+            default {
+                die "WTF : $_";
+            }
+        }
+    }
+
     method fetch(Sofa::Database:U: Str :$name!, Sofa::UserAgent :$ua!) returns Sofa::Database {
         my $db;
 
@@ -71,16 +91,8 @@ class Sofa::Database does JSON::Class {
             $db.ua = $ua;
         }
         else {
-            given $response.code {
-                when 404 {
-                    X::NoDatabase.new(:$name).throw;
-                }
-                default {
-                    die "WTF : $_";
-                }
-            }
+            self!get-exception($response.code, $name, 'fetching').throw;
         }
-
         $db;
     }
 
@@ -93,18 +105,7 @@ class Sofa::Database does JSON::Class {
                 $db = self.fetch(:$name, :$ua);
             }
             else {
-                given $response.code {
-                    when 400 {
-                        X::InvalidName.new(:$name).throw;
-                    }
-                    when 401 {
-                        X::NotAuthorised.new(:$name, what => 'create').throw;
-                    }
-                    when 412 {
-                        X::DatabaseExists.new(:$name).throw;
-                    }
-                }
-                die $response;
+                self!get-exception($response.code, $name, 'creating').throw;
             }
         }
         else {
@@ -116,14 +117,7 @@ class Sofa::Database does JSON::Class {
     multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {
         my $response = $ua.delete(path => $name);
         if not $response.is-success {
-            given $response.code {
-                when 404 {
-                    X::NoDatabase.new(:$name).throw;
-                }
-                when 401 {
-                    X::NotAuthorised.new(:$name, what => 'delete').throw;
-                }
-            }
+            self!get-exception($response.code, $name, 'delete').throw;
         }
         True;
     }
