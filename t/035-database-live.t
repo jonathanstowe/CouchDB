@@ -44,6 +44,17 @@ is $sofa.databases.elems, $db-count + 1, "and we got one more database";
 
 is $db.all-docs.elems, 0, "and because it's new there aren't any rows";
 
+my %doc = ( foo => 1, bar => "baz" );
+ok my $doc = $db.create-document(%doc), "create a document";
+
+isa-ok $doc, Sofa::Database::Document, "and got back a Sofa::Database::Document";
+
+ok $doc.ok, "ok is true";
+ok $doc.id, "There is a id";
+ok $doc.rev, "There is a rev";
+
+is $db.all-docs.elems, 1, "and now there should be a new row";
+
 lives-ok { $db.delete }, "delete the database";
 
 is $sofa.databases.elems, $db-count, "and the number is back to what it was";

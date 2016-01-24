@@ -128,9 +128,14 @@ class Sofa::Database does JSON::Class {
         $db;
     }
 
-    method all-docs(Sofa::Database:D:) {
+    multi method all-docs(Sofa::Database:D: :$detail) {
         my $path = self.get-local-path(path => '_all_docs');
         my %params;
+
+        if $detail {
+            %params<include_docs> = "true";
+
+        }
         my $response = self.ua.get(path => $path, params => %params);
         if $response.is-success {
             $response.from-json<rows>;
@@ -138,7 +143,23 @@ class Sofa::Database does JSON::Class {
         else {
             self!get-exception($response.code, $!name, 'getting all docs').throw;
         }
+    }
 
+    class Document {
+        has Str  $.id;
+        has Str  $.rev;
+        has Bool $.ok;
+    }
+
+    multi method create-document(Sofa::Database:D: %document) returns Document {
+        my $response = self.ua.post(path => $!name, content => %document);
+        if $response.is-success {
+            my %doc = $response.from-json;
+            Document.new(|%doc);
+        }
+        else {
+            self!get-exception($response.code, $!name, 'creating document').throw;
+        }
     }
 
     multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {

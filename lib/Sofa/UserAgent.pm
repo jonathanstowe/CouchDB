@@ -32,16 +32,29 @@ class Sofa::UserAgent is HTTP::UserAgent {
         $!base-template;
     }
 
-    multi method get(:$path!) returns Response {
-        self.request(GET(self.process(:$path), |%!default-headers)) but Response;
+    multi method get(:$path!, *%headers) returns Response {
+        self.request(GET(self.process(:$path), |%!default-headers, |%headers)) but Response;
     }
 
-    multi method put(Str :$path!, Str :$content) returns Response {
-        self.request(PUT(self.process(:$path), :$content, |%!default-headers)) but Response;
+    multi method put(Str :$path!, Str :$content, *%headers) returns Response {
+        self.request(PUT(self.process(:$path), :$content, |%!default-headers, |%headers)) but Response;
     }
 
-    multi method delete(Str :$path!) returns Response {
-        self.request(DELETE(self.process(:$path), |%!default-headers)) but Response;
+    multi method put(Str :$path!, :%content, *%headers) returns Response {
+        self.put(:$path, content => to-json(%content), |%headers);
+    }
+
+    multi method post(Str :$path!, Str :$content, *%headers) returns Response {
+        self.request(POST(self.process(:$path), :$content, |%!default-headers)) but Response;
+    }
+
+    multi method post(Str :$path!, :%content, *%headers) returns Response {
+        self.post(:$path, content => to-json(%content), |%headers);
+    }
+
+
+    multi method delete(Str :$path!, *%headers) returns Response {
+        self.request(DELETE(self.process(:$path), |%!default-headers, |%headers)) but Response;
     }
 
 }
