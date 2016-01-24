@@ -55,6 +55,48 @@ ok $doc.rev, "There is a rev";
 
 is $db.all-docs.elems, 1, "and now there should be a new row";
 
+is $db.all-docs[0]<id>, $doc.id, "and the id is there in the all-docs";
+
+
+ok my $new-doc = $db.get-document($doc), "get-document (with doc)";
+
+is $new-doc<foo>, 1, "got back the foo we sent";
+is $new-doc<bar>, "baz","and got back the bar we sent";
+is $new-doc<_id>, $doc.id, "and the id we expected";
+is $new-doc<_rev>, $doc.rev, "and the rev we expected";
+
+my $new-rev;
+lives-ok { $new-rev = $db.create-document($new-doc) }, "try  and create that again with the same id";
+
+is $new-rev.id, $doc.id, "and the doc id is the same";
+isnt $new-rev.rev, $doc.rev, "but the  doc rev is different";
+
+is $db.all-docs.elems, 1, "and it didn't get added";
+
+%doc<foo> = 2;
+%doc<bar> = "burp";
+
+my $new-new-rev;
+
+throws-like { $db.update-document($doc, %doc) }, X::DocumentConflict, "updating document with an old rev throws";
+
+lives-ok { $new-new-rev = $db.update-document($new-rev, %doc) }, "update document";
+
+isnt $new-new-rev.rev, $new-rev.rev, "and the revision got updated";
+
+ok $new-doc = $db.get-document($new-new-rev), "get-document (with doc)";
+
+is $new-doc<foo>, 2, "got back the foo we sent";
+is $new-doc<bar>, "burp","and got back the bar we sent";
+is $new-doc<_id>, $new-new-rev.id, "and the id we expected";
+is $new-doc<_rev>, $new-new-rev.rev, "and the rev we expected";
+
+
+throws-like { $db.delete-document($doc) }, X::DocumentConflict, "deleting with an older rev throws";
+lives-ok { $db.delete-document($new-new-rev) }, "delete the document";
+
+is $db.all-docs.elems, 0, "and the document went away";
+
 lives-ok { $db.delete }, "delete the database";
 
 is $sofa.databases.elems, $db-count, "and the number is back to what it was";

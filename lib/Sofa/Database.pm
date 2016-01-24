@@ -50,6 +50,13 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    class X::DocumentConflict is Exception {
+        has $.name;
+        has $.what;
+        method message() returns Str {
+            "There was a conflict while { $!what } document '{$!name}'";
+        }
+    }
     class X::NoDatabase is Exception {
         has $.name;
         method message() returns Str {
@@ -84,6 +91,9 @@ class Sofa::Database does JSON::Class {
             }
             when 404 {
                 X::NoDatabase.new(:$name);
+            }
+            when 409 {
+                X::DocumentConflict.new(:$name, :$what);
             }
             when 412 {
                 # This is not actually right as 412 is more context sensitive
@@ -159,6 +169,41 @@ class Sofa::Database does JSON::Class {
         }
         else {
             self!get-exception($response.code, $!name, 'creating document').throw;
+        }
+    }
+
+    multi method get-document(Sofa::Database:D: Document:D $doc ) {
+        my $path = self.get-local-path(path => $doc.id);
+        my $response = self.ua.get(:$path);
+        if $response.is-success {
+            $response.from-json;
+        }
+        else {
+            self!get-exception($response.code, $!name, 'retrieving document').throw;
+        }
+    }
+
+    multi method update-document(Sofa::Database:D: Document:D $doc, %document ) returns Document {
+        my $path = self.get-local-path(path => $doc.id);
+        my $response = self.ua.put(:$path, content => %document, If-Match => $doc.rev);
+        if $response.is-success {
+            my %doc = $response.from-json;
+            Document.new(|%doc);
+        }
+        else {
+            self!get-exception($response.code, $doc.id, 'updating document').throw;
+        }
+    }
+
+    multi method delete-document(Sofa::Database:D: Document:D $doc ) returns Document {
+        my $path = self.get-local-path(path => $doc.id);
+        my $response = self.ua.delete(:$path, If-Match => $doc.rev);
+        if $response.is-success {
+            my %doc = $response.from-json;
+            Document.new(|%doc);
+        }
+        else {
+            self!get-exception($response.code, $doc.id, 'deleting document').throw;
         }
     }
 
