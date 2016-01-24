@@ -9,6 +9,7 @@ class Sofa::UserAgent is HTTP::UserAgent {
     has Bool $.secure = False;
     has Str  $.base-url;
     has URI::Template $!base-template;
+    has      %.default-headers = (Accept => "application/json", Content-Type => "application/json");
 
     role Response {
         multi method from-json() {
@@ -32,15 +33,15 @@ class Sofa::UserAgent is HTTP::UserAgent {
     }
 
     multi method get(:$path!) returns Response {
-        self.get(self.process(:$path)) but Response;
+        self.request(GET(self.process(:$path), |%!default-headers)) but Response;
     }
 
     multi method put(Str :$path!, Str :$content) returns Response {
-        self.request(PUT(self.process(:$path), :$content)) but Response;
+        self.request(PUT(self.process(:$path), :$content, |%!default-headers)) but Response;
     }
 
     multi method delete(Str :$path!) returns Response {
-        self.request(DELETE(self.process(:$path))) but Response;
+        self.request(DELETE(self.process(:$path), |%!default-headers)) but Response;
     }
 
 }
