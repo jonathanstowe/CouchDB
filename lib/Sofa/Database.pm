@@ -24,6 +24,10 @@ class Sofa::Database does JSON::Class {
 
     has URI::Template $!local-template;
 
+    has Supply        $!changes-supply;
+
+    has Promise       $!delete-promise = Promise.new;
+
     method local-template() returns URI::Template {
         if not $!local-template.defined {
             # may want to be + in our template
@@ -139,16 +143,53 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method all-docs(Sofa::Database:D: :$detail) {
-        my $path = self.get-local-path(path => '_all_docs');
         my %params;
 
         if $detail {
             %params<include_docs> = "true";
 
         }
-        my $response = self.ua.get(path => $path, params => %params);
+        my $path = self.get-local-path(path => '_all_docs', params => %params);
+        my $response = self.ua.get(path => $path);
         if $response.is-success {
             $response.from-json<rows>;
+        }
+        else {
+            self!get-exception($response.code, $!name, 'getting all docs').throw;
+        }
+    }
+
+    method changes-supply(Sofa::Database:D:) {
+        $!changes-supply //= supply {
+            my $last-seq;
+            whenever Supply.interval(0.25) {
+                if $!delete-promise {
+                    done;
+                }
+                else {
+                    my $changes = self.get-changes($last-seq);
+                    for $changes<results>.list -> $result {
+                        emit($result);
+                    }
+                    $last-seq = $changes<last_seq>;
+                }
+            }
+        }
+        $!changes-supply;
+    }
+
+    method get-changes(Sofa::Database:D: $last-seq?) {
+        my $path = self.get-local-path(path => '_changes');
+
+        my %header;
+
+        if $last-seq.defined {
+            %header<Last-Event-ID> = $last-seq;
+        }
+
+        my $response = self.ua.get(path => $path, |%header );
+        if $response.is-success {
+            $response.from-json;
         }
         else {
             self!get-exception($response.code, $!name, 'getting all docs').throw;
@@ -207,6 +248,7 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+
     multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {
         my $response = $ua.delete(path => $name);
         if not $response.is-success {
@@ -216,7 +258,9 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method delete(Sofa::Database:D:) returns Bool {
-        Sofa::Database.delete(name => $!name, ua => $!ua);
+        my $a = Sofa::Database.delete(name => $!name, ua => $!ua);
+        $!delete-promise.keep if $a;
+        $a;
     }
     
 }

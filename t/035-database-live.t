@@ -42,6 +42,12 @@ isa-ok $db, Sofa::Database, "and it returned the right sort of thing";
 is $db.name, $name, "and the right name is returned";
 is $sofa.databases.elems, $db-count + 1, "and we got one more database";
 
+my $changes-count = 0;
+
+ok $db.get-changes(), "get-changes";
+
+lives-ok { $db.changes-supply.tap({ $changes-count++; }); }, "tap the changes-supply";
+
 is $db.all-docs.elems, 0, "and because it's new there aren't any rows";
 
 my %doc = ( foo => 1, bar => "baz" );
@@ -97,12 +103,13 @@ lives-ok { $db.delete-document($new-new-rev) }, "delete the document";
 
 is $db.all-docs.elems, 0, "and the document went away";
 
+ok $changes-count > 0, "and we saw some changes on the supply";
+
 lives-ok { $db.delete }, "delete the database";
 
 is $sofa.databases.elems, $db-count, "and the number is back to what it was";
 
 throws-like { $db.delete }, X::NoDatabase, "throws on a second attempt to delete";
-
 
 done-testing;
 # vim: expandtab shiftwidth=4 ft=perl6
