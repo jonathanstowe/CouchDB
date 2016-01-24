@@ -10,6 +10,13 @@ class Sofa::UserAgent is HTTP::UserAgent {
     has Str  $.base-url;
     has URI::Template $!base-template;
 
+    role Response {
+        multi method from-json() {
+            from-json(self.content);
+        }
+
+    }
+
     method base-url() returns Str {
         if not $!base-url.defined {
             $!base-url = 'http' ~ ($!secure ?? 's' !! '') ~ '://' ~ $!host ~ ':' ~ $!port.Str ~ '/{+path}';
@@ -24,16 +31,16 @@ class Sofa::UserAgent is HTTP::UserAgent {
         $!base-template;
     }
 
-    multi method get(:$path!) returns HTTP::Message {
-        self.get(self.process(:$path));
+    multi method get(:$path!) returns Response {
+        self.get(self.process(:$path)) but Response;
     }
 
-    multi method put(Str :$path!, Str :$content) returns HTTP::Message {
-        self.request(PUT(self.process(:$path), :$content));
+    multi method put(Str :$path!, Str :$content) returns Response {
+        self.request(PUT(self.process(:$path), :$content)) but Response;
     }
 
-    multi method delete(Str :$path!) returns HTTP::Message {
-        self.request(DELETE(self.process(:$path)));
+    multi method delete(Str :$path!) returns Response {
+        self.request(DELETE(self.process(:$path))) but Response;
     }
 
 }
