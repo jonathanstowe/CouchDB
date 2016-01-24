@@ -42,6 +42,7 @@ isa-ok $db, Sofa::Database, "and it returned the right sort of thing";
 is $db.name, $name, "and the right name is returned";
 is $sofa.databases.elems, $db-count + 1, "and we got one more database";
 
+is $db.all-docs.elems, 0, "and because it's new there aren't any rows";
 
 lives-ok { $db.delete }, "delete the database";
 

@@ -22,6 +22,20 @@ class Sofa::Database does JSON::Class {
 
     has Sofa::UserAgent $.ua is rw;
 
+    has URI::Template $!local-template;
+
+    method local-template() returns URI::Template {
+        if not $!local-template.defined {
+            # may want to be + in our template
+            $!local-template = URI::Template.new(template => "/{ $!name }" ~ '{/path}{?params*}');
+        }
+        $!local-template;
+    }
+
+    method get-local-path(*%parts) returns Str {
+        self.local-template.process(|%parts);
+    }
+
     class X::InvalidName is Exception {
         has $.name;
         method message() returns Str {
@@ -112,6 +126,19 @@ class Sofa::Database does JSON::Class {
             X::InvalidName.new(:$name).throw;
         }
         $db;
+    }
+
+    method all-docs(Sofa::Database:D:) {
+        my $path = self.get-local-path(path => '_all_docs');
+        my %params;
+        my $response = self.ua.get(path => $path, params => %params);
+        if $response.is-success {
+            $response.from-json<rows>;
+        }
+        else {
+            self!get-exception($response.code, $!name, 'getting all docs').throw;
+        }
+
     }
 
     multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {
