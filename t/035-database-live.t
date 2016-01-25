@@ -42,11 +42,11 @@ isa-ok $db, Sofa::Database, "and it returned the right sort of thing";
 is $db.name, $name, "and the right name is returned";
 is $sofa.databases.elems, $db-count + 1, "and we got one more database";
 
-my $changes-count = 0;
+my @changes;
 
 ok $db.get-changes(), "get-changes";
 
-lives-ok { $db.changes-supply.tap({ $changes-count++; }); }, "tap the changes-supply";
+lives-ok { $db.changes-supply.tap({ @changes.push($_); }); }, "tap the changes-supply";
 
 is $db.all-docs.elems, 0, "and because it's new there aren't any rows";
 
@@ -103,7 +103,9 @@ lives-ok { $db.delete-document($new-new-rev) }, "delete the document";
 
 is $db.all-docs.elems, 0, "and the document went away";
 
-ok $changes-count > 0, "and we saw some changes on the supply";
+ok @changes.elems > 0, "and we saw some changes on the supply";
+
+is @changes.classify({ $_<seq> }).values.grep({ $_.elems > 1}).elems, 0, "and there are no duplicates";
 
 lives-ok { $db.delete }, "delete the database";
 
