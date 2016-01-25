@@ -161,25 +161,42 @@ class Sofa::Database does JSON::Class {
 
     method changes-supply(Sofa::Database:D:) {
         $!changes-supply //= supply {
-            my $last-seq;
-            whenever Supply.interval(0.25) {
-                if $!delete-promise {
-                    done;
-                }
-                else {
-                    my $changes = self.get-changes($last-seq);
+            my $supplier = Supplier.new;
+
+            whenever $supplier.Supply -> $v {
+                emit($v);
+            }
+
+            my $p = start {
+                my $last-seq;
+                loop {
+                    if $!delete-promise {
+                        last;
+                    }
+                    my $changes = self.get-changes($last-seq,:poll); 
                     for $changes<results>.list -> $result {
-                        emit($result);
+                        if !($last-seq.defined && ($last-seq eq $result<seq> )) {
+                            $supplier.emit($result);
+                        }
                     }
                     $last-seq = $changes<last_seq>;
                 }
+                $supplier.done;
+            }
+            whenever $p {
+                done;
             }
         }
         $!changes-supply;
     }
 
-    method get-changes(Sofa::Database:D: $last-seq?) {
-        my $path = self.get-local-path(path => '_changes');
+    method get-changes(Sofa::Database:D: $last-seq?, :$poll) {
+        my %params;
+
+        if $poll {
+            %params<feed> = "longpoll";
+        }
+        my $path = self.get-local-path(path => '_changes', params => %params);
 
         my %header;
 
