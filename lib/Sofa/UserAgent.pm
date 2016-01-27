@@ -11,12 +11,15 @@ class Sofa::UserAgent is HTTP::UserAgent {
     has URI::Template $!base-template;
     has      %.default-headers = (Accept => "application/json", Content-Type => "application/json");
 
+    subset FromJSON of Mu where { $_.can('from-json') };
+    subset ToJSON   of Mu where { $_.can('to-json') };
+    subset LikeJSONClass of Mu where all(FromJSON,ToJSON);
+
     role Response {
-        my subset LikeJSONClass of Mu where { $_.can('from-json') };
         multi method from-json() {
             from-json(self.content);
         }
-        multi method from-json(LikeJSONClass $c) {
+        multi method from-json(FromJSON $c) {
             $c.from-json(self.content);
         }
 
@@ -45,7 +48,11 @@ class Sofa::UserAgent is HTTP::UserAgent {
     }
 
     multi method put(Str :$path!, :%content, *%headers) returns Response {
-        self.put(:$path, content => to-json(%content), |%headers);
+        samewith(:$path, content => to-json(%content), |%headers);
+    }
+
+    multi method put(Str :$path!, ToJSON :$content, *%headers) returns Response {
+        samewith(:$path, content => $content.to-json, |%headers);
     }
 
     multi method post(Str :$path!, Str :$content, *%headers) returns Response {
@@ -53,9 +60,12 @@ class Sofa::UserAgent is HTTP::UserAgent {
     }
 
     multi method post(Str :$path!, :%content, *%headers) returns Response {
-        self.post(:$path, content => to-json(%content), |%headers);
+        samewith(:$path, content => to-json(%content), |%headers);
     }
 
+    multi method post(Str :$path!, :%content, *%headers) returns Response {
+        samewith(:$path, content => to-json(%content), |%headers);
+    }
 
     multi method delete(Str :$path!, *%headers) returns Response {
         self.request(DELETE(self.process(:$path), |%!default-headers, |%headers)) but Response;
