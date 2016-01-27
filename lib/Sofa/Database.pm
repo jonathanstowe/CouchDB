@@ -218,6 +218,24 @@ class Sofa::Database does JSON::Class {
         has Bool $.ok;
     }
 
+
+    my role DocumentWrapper {
+        has Str $.sofa_document_type = _get_doc_name();
+        has Str $.sofa_document_id       is json-name('_id');
+        has Str $.sofa_document_revision is json-name('_rev');
+
+        sub _get_doc_name() {
+            my $n = ::?CLASS.^name.lc.subst(/\:+/,"_", :g);
+            $n.subst(/\+.*/,'');
+        } 
+        method to-json() {
+            if not $!sofa_document_type {
+                $!sofa_document_type = _get_doc_name();
+            }
+            nextsame;
+        }
+    }
+
     multi method create-document(Sofa::Database:D: %document) returns Document {
         my $response = self.ua.post(path => $!name, content => %document);
         if $response.is-success {
@@ -226,6 +244,10 @@ class Sofa::Database does JSON::Class {
         else {
             self!get-exception($response.code, $!name, 'creating document').throw;
         }
+    }
+
+    multi method create-document(Sofa::Database:D: Str $doc-id, %document) returns Document {
+        self!put-document(%document, $doc-id, what => "creating document");
     }
 
     multi method get-document(Sofa::Database:D: Document:D $doc ) {
@@ -248,13 +270,21 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Document {
+        self!put-document(%document, $doc-id, $doc-rev);
+    }
+
+    method !put-document(%document, Str $doc-id, Str $doc-rev?, :$what = 'updating document') {
         my $path = self.get-local-path(path => $doc-id);
-        my $response = self.ua.put(:$path, content => %document, If-Match => $doc-rev);
+        my %h;
+        if $doc-rev.defined {
+            %h<If-Match> = $doc-rev;
+        }
+        my $response = self.ua.put(:$path, content => %document, |%h);
         if $response.is-success {
             $response.from-json(Document);
         }
         else {
-            self!get-exception($response.code, $doc-id, 'updating document').throw;
+            self!get-exception($response.code, $doc-id, $what).throw;
         }
     }
 
