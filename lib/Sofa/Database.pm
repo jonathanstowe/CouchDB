@@ -159,7 +159,7 @@ class Sofa::Database does JSON::Class {
     }
 
     method changes-supply(Sofa::Database:D:) {
-        $!changes-supply //= supply {
+        $!changes-supply //= ( supply {
             my $supplier = Supplier.new;
 
             whenever $supplier.Supply -> $v {
@@ -185,7 +185,7 @@ class Sofa::Database does JSON::Class {
             whenever $p {
                 done;
             }
-        }
+        }).unique(as => { $_<seq> }, expires => 5);
         $!changes-supply;
     }
 
