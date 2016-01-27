@@ -1,5 +1,4 @@
 use JSON::Class;
-use JSON::Name;
 use JSON::Unmarshal;
 
 class Sofa::Database does JSON::Class {
@@ -213,7 +212,7 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    class Document {
+    class Document does JSON::Class {
         has Str  $.id;
         has Str  $.rev;
         has Bool $.ok;
@@ -222,8 +221,7 @@ class Sofa::Database does JSON::Class {
     multi method create-document(Sofa::Database:D: %document) returns Document {
         my $response = self.ua.post(path => $!name, content => %document);
         if $response.is-success {
-            my %doc = $response.from-json;
-            Document.new(|%doc);
+           $response.from-json(Document);
         }
         else {
             self!get-exception($response.code, $!name, 'creating document').throw;
@@ -231,7 +229,11 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method get-document(Sofa::Database:D: Document:D $doc ) {
-        my $path = self.get-local-path(path => $doc.id);
+        samewith($doc.id);
+    }
+
+    multi method get-document(Sofa::Database:D: Str $doc-id ) {
+        my $path = self.get-local-path(path => $doc-id);
         my $response = self.ua.get(:$path);
         if $response.is-success {
             $response.from-json;
@@ -242,26 +244,32 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method update-document(Sofa::Database:D: Document:D $doc, %document ) returns Document {
-        my $path = self.get-local-path(path => $doc.id);
-        my $response = self.ua.put(:$path, content => %document, If-Match => $doc.rev);
+        samewith($doc.id, $doc.rev, %document);
+    }
+
+    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Document {
+        my $path = self.get-local-path(path => $doc-id);
+        my $response = self.ua.put(:$path, content => %document, If-Match => $doc-rev);
         if $response.is-success {
-            my %doc = $response.from-json;
-            Document.new(|%doc);
+            $response.from-json(Document);
         }
         else {
-            self!get-exception($response.code, $doc.id, 'updating document').throw;
+            self!get-exception($response.code, $doc-id, 'updating document').throw;
         }
     }
 
     multi method delete-document(Sofa::Database:D: Document:D $doc ) returns Document {
-        my $path = self.get-local-path(path => $doc.id);
-        my $response = self.ua.delete(:$path, If-Match => $doc.rev);
+        samewith($doc.id, $doc.rev);
+    }
+
+    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev) returns Document {
+        my $path = self.get-local-path(path => $doc-id);
+        my $response = self.ua.delete(:$path, If-Match => $doc-rev);
         if $response.is-success {
-            my %doc = $response.from-json;
-            Document.new(|%doc);
+            $response.from-json(Document);
         }
         else {
-            self!get-exception($response.code, $doc.id, 'deleting document').throw;
+            self!get-exception($response.code, $doc-id, 'deleting document').throw;
         }
     }
 
