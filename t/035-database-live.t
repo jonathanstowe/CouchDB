@@ -103,6 +103,21 @@ lives-ok { $db.delete-document($new-new-rev) }, "delete the document";
 
 is $db.all-docs.elems, 0, "and the document went away";
 
+my %named-doc = ( zub => "baz", bar => "foo" );
+
+my $named-doc-doc;
+
+lives-ok { $named-doc-doc = $db.create-document('flurble', %named-doc) }, "create-document with explicit id";
+is $named-doc-doc.id, 'flurble', "and we got the right one back";
+my $named-doc-back;
+lives-ok { $named-doc-back = $db.get-document('flurble') }, "get it back by name";
+is $named-doc-back<zub>, %named-doc<zub>, "and it looks like the right document";
+
+lives-ok { $db.delete-document($named-doc-doc.id, $named-doc-doc.rev) }, "delete by id and rev";
+
+is $db.all-docs.elems, 0, "and the document went away";
+
+
 ok @changes.elems > 0, "and we saw some changes on the supply";
 
 is @changes.classify({ $_<seq> }).values.grep({ $_.elems > 1}).elems, 0, "and there are no duplicates";
