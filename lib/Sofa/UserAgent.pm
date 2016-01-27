@@ -12,8 +12,12 @@ class Sofa::UserAgent is HTTP::UserAgent {
     has      %.default-headers = (Accept => "application/json", Content-Type => "application/json");
 
     role Response {
+        my subset LikeJSONClass of Mu where { $_.can('from-json') };
         multi method from-json() {
             from-json(self.content);
+        }
+        multi method from-json(LikeJSONClass $c) {
+            $c.from-json(self.content);
         }
 
     }
