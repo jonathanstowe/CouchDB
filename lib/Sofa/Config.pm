@@ -1,5 +1,6 @@
-use JSON::Class;
+
 use JSON::Name;
+use JSON::Class:ver(v0.0.5..*);
 
 class Sofa::Config does JSON::Class {
     class Log does JSON::Class {

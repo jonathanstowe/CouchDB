@@ -1,5 +1,6 @@
-use JSON::Class;
+
 use JSON::Name;
+use JSON::Class:ver(v0.0.5..*);
 use JSON::Unmarshal;
 class Sofa::Statistics does JSON::Class {
 
