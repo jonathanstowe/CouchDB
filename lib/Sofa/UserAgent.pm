@@ -1,7 +1,11 @@
-use v6;
-use HTTP::UserAgent;
+use v6.c;
+
 use URI::Template;
 use HTTP::Request::Common;
+
+no precompilation;
+
+use HTTP::UserAgent ();
 
 class Sofa::UserAgent is HTTP::UserAgent {
     has Str  $.host = 'localhost';
@@ -15,7 +19,7 @@ class Sofa::UserAgent is HTTP::UserAgent {
     subset ToJSON   of Mu where { $_.can('to-json') };
     subset LikeJSONClass of Mu where all(FromJSON,ToJSON);
 
-    role Response {
+    role CouchResponse {
         multi method from-json() {
             from-json(self.content);
         }
@@ -39,37 +43,38 @@ class Sofa::UserAgent is HTTP::UserAgent {
         $!base-template;
     }
 
-    multi method get(:$path!, *%headers) returns Response {
-        self.request(GET(self.process(:$path), |%!default-headers, |%headers)) but Response;
+    multi method get(:$path!, *%headers) returns CouchResponse {
+        self.request(GET(self.process(:$path), |%!default-headers, |%headers)) but CouchResponse;
     }
 
-    multi method put(Str :$path!, Str :$content, *%headers) returns Response {
-        self.request(PUT(self.process(:$path), :$content, |%!default-headers, |%headers)) but Response;
+    multi method put(Str :$path!, Str :$content, *%headers) returns CouchResponse {
+        self.request(PUT(self.process(:$path), :$content, |%!default-headers, |%headers)) but CouchResponse;
     }
 
-    multi method put(Str :$path!, :%content, *%headers) returns Response {
+    multi method put(Str :$path!, :%content, *%headers) returns CouchResponse {
         samewith(:$path, content => to-json(%content), |%headers);
     }
 
-    multi method put(Str :$path!, ToJSON :$content, *%headers) returns Response {
+    multi method put(Str :$path!, ToJSON :$content, *%headers) returns CouchResponse {
         samewith(:$path, content => $content.to-json, |%headers);
     }
 
-    multi method post(Str :$path!, Str :$content, *%headers) returns Response {
-        self.request(POST(self.process(:$path), :$content, |%!default-headers)) but Response;
+    multi method post(Str :$path!, Str :$content, *%headers) returns CouchResponse {
+        self.request(POST(self.process(:$path), :$content, |%!default-headers)) but CouchResponse;
     }
 
-    multi method post(Str :$path!, :%content, *%headers) returns Response {
+    multi method post(Str :$path!, :%content, *%headers) returns CouchResponse {
         samewith(:$path, content => to-json(%content), |%headers);
     }
 
-    multi method post(Str :$path!, :%content, *%headers) returns Response {
-        samewith(:$path, content => to-json(%content), |%headers);
+    multi method post(Str :$path!, ToJSON :$content, *%headers) returns CouchResponse {
+        samewith(:$path, content => $content.to-json, |%headers);
     }
 
-    multi method delete(Str :$path!, *%headers) returns Response {
-        self.request(DELETE(self.process(:$path), |%!default-headers, |%headers)) but Response;
+    multi method delete(Str :$path!, *%headers) returns CouchResponse {
+        self.request(DELETE(self.process(:$path), |%!default-headers, |%headers)) but CouchResponse;
     }
 
 }
+
 # vim: expandtab shiftwidth=4 ft=perl6
