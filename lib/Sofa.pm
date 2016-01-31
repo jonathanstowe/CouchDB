@@ -23,7 +23,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
         my @db-names;
         my $response = self.ua.get(path => '_all_dbs');
         if $response.is-success {
-            @db-names = from-json($response.content).list;
+            @db-names = $response.from-json.list;
         }
         @db-names;
     }
@@ -46,6 +46,14 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
            @.databases.push: $db;
        }
        $db;
+   }
+
+   method statistics() {
+        my $response = self.ua.get(path => '_stats');
+        if $response.is-success {
+            require Sofa::Statistics;
+            $response.from-json(::('Sofa::Statistics'));
+        }
    }
 }
 # vim: expandtab shiftwidth=4 ft=perl6
