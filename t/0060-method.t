@@ -6,6 +6,8 @@ use Test;
 
 use Sofa::Method;
 
+use lib $*PROGRAM.parent.child('lib').Str;
+
 {
     use Sofa::Item;
 
@@ -19,6 +21,8 @@ use Sofa::Method;
 class Bar {
     method bar is sofa-item('Foo') { * }
     method baz is sofa-item('Baz') { * }
+    method zub is sofa-item('Zub') { * }
+    method statistics is sofa-item('Sofa::Statistics') { * }
 
     method ua() {
         (class {
@@ -49,6 +53,14 @@ isa-ok $ret[1], Foo, "and so did the type";
 lives-ok { $ret = $f.baz }, "run the method (baz)";
 is $ret[0], '_baz', "and the path get passed correctly";
 isa-ok $ret[1], Baz, "and so did the type";
+
+lives-ok { $ret = $f.zub }, "run the method (zub)";
+is $ret[0], '_zubber', "and the path get passed correctly";
+isa-ok $ret[1], ::('Zub'), "and so did the type";
+
+lives-ok { $ret = $f.statistics }, "run the method (statistics)";
+is $ret[0], '_stats', "and the path get passed correctly";
+isa-ok $ret[1], ::('Sofa::Statistics'), "and so did the type";
 
 done-testing;
 # vim: expandtab shiftwidth=4 ft=perl6
