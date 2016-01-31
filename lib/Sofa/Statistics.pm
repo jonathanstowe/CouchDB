@@ -2,7 +2,9 @@
 use JSON::Name;
 use JSON::Class:ver(v0.0.5..*);
 use JSON::Unmarshal;
-class Sofa::Statistics does JSON::Class {
+use Sofa::Item;
+
+class Sofa::Statistics does JSON::Class is sofa-path('_stats') {
 
     sub rat-safe($value) returns Rat {
         my Rat $ret;

@@ -2,7 +2,9 @@
 use JSON::Name;
 use JSON::Class:ver(v0.0.5..*);
 
-class Sofa::Config does JSON::Class {
+use Sofa::Item;
+
+class Sofa::Config does JSON::Class is sofa-path('_config') {
     class Log does JSON::Class {
         has Str $.file;
         has Str $.include_sasl;
