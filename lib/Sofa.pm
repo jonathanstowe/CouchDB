@@ -55,5 +55,12 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
             $response.from-json(::('Sofa::Statistics'));
         }
    }
+   method configuration() {
+        my $response = self.ua.get(path => '_config');
+        if $response.is-success {
+            require Sofa::Config;
+            $response.from-json(::('Sofa::Config'));
+        }
+   }
 }
 # vim: expandtab shiftwidth=4 ft=perl6
