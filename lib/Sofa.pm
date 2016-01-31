@@ -1,9 +1,12 @@
 use v6;
 
+use Sofa::Method;
+
 class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
     use Sofa::UserAgent;
     use Sofa::Database;
     use JSON::Tiny;
+    
 
     has Sofa::UserAgent $.ua is rw;
     has Int  $.port is rw = 5984;
@@ -48,19 +51,8 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
        $db;
    }
 
-   method statistics() {
-        my $response = self.ua.get(path => '_stats');
-        if $response.is-success {
-            require Sofa::Statistics;
-            $response.from-json(::('Sofa::Statistics'));
-        }
-   }
-   method configuration() {
-        my $response = self.ua.get(path => '_config');
-        if $response.is-success {
-            require Sofa::Config;
-            $response.from-json(::('Sofa::Config'));
-        }
-   }
+   method statistics() is sofa-item('Sofa::Statistics') { * }
+
+   method configuration() is sofa-item('Sofa::Config') { * }
 }
 # vim: expandtab shiftwidth=4 ft=perl6
