@@ -6,6 +6,7 @@ use Sofa::UserAgent;
 class Sofa::Database does JSON::Class {
     use Sofa::Document;
     use Sofa::Document::Wrapper;
+    use Sofa::Design;
 
     sub microsecs-to-dt($val) returns DateTime {
         DateTime.new(($val.Numeric/1000000).Int);
@@ -34,7 +35,7 @@ class Sofa::Database does JSON::Class {
     method local-template() returns URI::Template {
         if not $!local-template.defined {
             # may want to be + in our template
-            $!local-template = URI::Template.new(template => "/{ $!name }" ~ '{/path}{?params*}');
+            $!local-template = URI::Template.new(template => "/{ $!name }" ~ '/{+path}{?params*}');
         }
         $!local-template;
     }
@@ -71,12 +72,24 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    class X::NoDocument is Exception {
+        has $.name;
+        has $.what;
+        method message() {
+            "Document '{ $!name }' not found while '{ $!what }'";
+        }
+    }
+
     class X::NotAuthorised is Exception {
         has $.name;
         has $.what;
         method message() returns Str {
             "You are not authorised to { $!what } database '{$!name}'";
         }
+    }
+
+    class X::NoIdOrName is Exception {
+        has $.message = "Cannot put a design document without a name or id";
     }
 
 
@@ -88,7 +101,9 @@ class Sofa::Database does JSON::Class {
         so ($name ~~ /<valid-db-name>/);
     }
 
-    method !get-exception(Int() $code, Str $name, Str $what) {
+    enum ExceptionContext <Database Document>;
+
+    method !get-exception(Int() $code, Str $name, Str $what, ExceptionContext $context = Database) {
         given $code {
             when 400 {
                 X::InvalidName.new(:$name);
@@ -97,7 +112,14 @@ class Sofa::Database does JSON::Class {
                 X::NotAuthorised.new(:$name, :$what);
             }
             when 404 {
-                X::NoDatabase.new(:$name);
+                given $context {
+                    when Database {
+                        X::NoDatabase.new(:$name);
+                    }
+                    when Document {
+                        X::NoDocument.new(:$name, :$what);
+                    }
+                }
             }
             when 409 {
                 X::DocumentConflict.new(:$name, :$what);
@@ -246,6 +268,47 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    sub design-id(Str $doc-id is copy) returns Str {
+        if $doc-id !~~ /^_design\// {
+            $doc-id = '_design/' ~ $doc-id;
+        }
+        $doc-id;
+    }
+
+    
+    subset NamedDesign  of Sofa::Design where  { $_.defined && ( $_.name.defined || $_.sofa_document_id.defined ) };
+    subset NoNameDesign of Sofa::Design where  { $_.defined && ( !$_.name.defined and !$_.sofa_document_id.defined ) };
+
+    multi method put-design(Sofa::Database:D: NamedDesign $doc ) returns Sofa::Document {
+        my $doc-info = self!put-document($doc, $doc.id-or-name, $doc.sofa_document_revision, what => 'putting design document'); 
+        $doc.update-rev($doc-info);
+        $doc-info;
+    }
+
+    multi method put-design(Sofa::Database:D: NoNameDesign $doc, Str:D $doc-id ) returns Sofa::Document {
+        my $doc-info = self!put-document($doc, design-id($doc-id), $doc.sofa_document_revision, what => 'putting design document'); 
+        $doc.update-rev($doc-info);
+        $doc-info;
+    }
+
+    # Because we might not dealing with one we created ourself $!name can't be required
+    multi method put-design(NoNameDesign $) {
+        X::NoIdOrName.new.throw;
+    }
+
+    # just for consistency
+    multi method delete-design(Sofa::Database:D: $doc ) returns Sofa::Document {
+        self.delete-document($doc);
+    }
+
+    multi method get-design(Sofa::Database:D:  Sofa::Document:D $doc) returns Sofa::Design {
+        samewith($doc.id);
+    }
+
+    multi method get-design(Sofa::Database:D: Str $doc-id) returns Sofa::Design {
+        self.get-document(design-id($doc-id), Sofa::Design);
+    }
+
     multi method get-document(Sofa::Database:D: Sofa::Document:D $doc ) {
         samewith($doc.id);
     }
@@ -261,7 +324,7 @@ class Sofa::Database does JSON::Class {
             $response.from-json;
         }
         else {
-            self!get-exception($response.code, $!name, 'retrieving document').throw;
+            self!get-exception($response.code, $doc-id, 'retrieving document', Document).throw;
         }
     }
     multi method get-document(Sofa::Database:D: Str $doc-id, JSON::Class:U $c ) {
@@ -272,7 +335,7 @@ class Sofa::Database does JSON::Class {
             $response.from-json($type);
         }
         else {
-            self!get-exception($response.code, $!name, 'retrieving document').throw;
+            self!get-exception($response.code, $doc-id, 'retrieving document', Document).throw;
         }
     }
 
