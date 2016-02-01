@@ -2,13 +2,15 @@ use v6.c;
 
 use JSON::Name;
 use Sofa::Document;
+use Sofa::Document::Attachment;
 
 role Sofa::Document::Wrapper {
     use JSON::Class;
 
-    has Str $.sofa_document_type = _get_doc_name();
-    has Str $.sofa_document_id       is json-name('_id') is json-skip-null;
-    has Str $.sofa_document_revision is json-name('_rev') is json-skip-null;
+    has Str                        $.sofa_document_type = _get_doc_name();
+    has Str                        $.sofa_document_id       is json-name('_id')  is json-skip-null;
+    has Str                        $.sofa_document_revision is json-name('_rev') is json-skip-null;
+    has Sofa::Document::Attachment %.attachments            is json-name('_attachments');
 
     sub _get_doc_name() {
         my $n = ::?CLASS.^name.lc.subst(/\:+/,"_", :g);
