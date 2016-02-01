@@ -1,10 +1,11 @@
 use v6.c;
 
 use JSON::Name;
-use JSON::Marshal;
 use Sofa::Document;
 
 role Sofa::Document::Wrapper {
+    use JSON::Class;
+
     has Str $.sofa_document_type = _get_doc_name();
     has Str $.sofa_document_id       is json-name('_id') is json-skip-null;
     has Str $.sofa_document_revision is json-name('_rev') is json-skip-null;
@@ -14,10 +15,11 @@ role Sofa::Document::Wrapper {
         $n.subst(/\+.*/,'');
     } 
     method to-json() {
+        self does JSON::Class;
         if not $!sofa_document_type {
             $!sofa_document_type = _get_doc_name();
         }
-        nextsame;
+        self.JSON::Class::to-json();
     }
 
     method update-rev(Sofa::Document:D $doc) {
