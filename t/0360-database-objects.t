@@ -39,7 +39,7 @@ ok my $doc = $db.create-document($test-obj), "create a document";
 is $test-obj.sofa_document_revision, $doc.rev, "got updated with the document revision";
 is $test-obj.sofa_document_id, $doc.id, "and updated with the document id";
 
-isa-ok $doc, Sofa::Database::Document, "and got back a Sofa::Database::Document";
+isa-ok $doc, Sofa::Document, "and got back a Sofa::Document";
 
 ok $doc.ok, "ok is true";
 ok $doc.id, "There is a id";

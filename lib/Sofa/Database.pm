@@ -4,6 +4,8 @@ use JSON::Class:ver(v0.0.5..*);
 use Sofa::UserAgent;
 
 class Sofa::Database does JSON::Class {
+    use Sofa::Document;
+    use Sofa::Document::Wrapper;
 
     sub microsecs-to-dt($val) returns DateTime {
         DateTime.new(($val.Numeric/1000000).Int);
@@ -214,56 +216,28 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    class Document does JSON::Class {
-        has Str  $.id;
-        has Str  $.rev;
-        has Bool $.ok;
-    }
 
 
-    my role DocumentWrapper {
-        has Str $.sofa_document_type = _get_doc_name();
-        has Str $.sofa_document_id       is json-name('_id') is json-skip-null;
-        has Str $.sofa_document_revision is json-name('_rev') is json-skip-null;
 
-        sub _get_doc_name() {
-            my $n = ::?CLASS.^name.lc.subst(/\:+/,"_", :g);
-            $n.subst(/\+.*/,'');
-        } 
-        method to-json() {
-            if not $!sofa_document_type {
-                $!sofa_document_type = _get_doc_name();
-            }
-            nextsame;
-        }
-
-        method update-rev(Document:D $doc) {
-            if !$!sofa_document_id.defined || ($doc.id eq $!sofa_document_id ) {
-                $!sofa_document_id = $doc.id;
-                $!sofa_document_revision = $doc.rev;
-            }
-        }
-    }
-
-    multi method create-document(Sofa::Database:D: %document) returns Document {
+    multi method create-document(Sofa::Database:D: %document) returns Sofa::Document {
         my $response = self.ua.post(path => $!name, content => %document);
         if $response.is-success {
-           $response.from-json(Document);
+           $response.from-json(Sofa::Document);
         }
         else {
             self!get-exception($response.code, $!name, 'creating document').throw;
         }
     }
 
-    multi method create-document(Sofa::Database:D: Str $doc-id, %document) returns Document {
+    multi method create-document(Sofa::Database:D: Str $doc-id, %document) returns Sofa::Document {
         self!put-document(%document, $doc-id, what => "creating document");
     }
 
-    multi method create-document(Sofa::Database:D: JSON::Class $document) returns Document {
-        $document does DocumentWrapper unless $document ~~ DocumentWrapper;
+    multi method create-document(Sofa::Database:D: JSON::Class $document) returns Sofa::Document {
+        $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
         my $response = self.ua.post(path => $!name, content => $document);
         if $response.is-success {
-           my $doc = $response.from-json(Document);
+           my $doc = $response.from-json(Sofa::Document);
            $document.update-rev($doc);
            $doc;
         }
@@ -272,11 +246,11 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    multi method get-document(Sofa::Database:D: Document:D $doc ) {
+    multi method get-document(Sofa::Database:D: Sofa::Document:D $doc ) {
         samewith($doc.id);
     }
 
-    multi method get-document(Sofa::Database:D: Document:D $doc, JSON::Class:U $c ) {
+    multi method get-document(Sofa::Database:D: Sofa::Document:D $doc, JSON::Class:U $c ) {
         samewith($doc.id, $c);
     }
 
@@ -293,7 +267,7 @@ class Sofa::Database does JSON::Class {
     multi method get-document(Sofa::Database:D: Str $doc-id, JSON::Class:U $c ) {
         my $path = self.get-local-path(path => $doc-id);
         my $response = self.ua.get(:$path);
-        my $type = $c ~~ DocumentWrapper ?? $c !! $c but DocumentWrapper;
+        my $type = $c ~~ Sofa::Document::Wrapper ?? $c !! $c but Sofa::Document::Wrapper;
         if $response.is-success {
             $response.from-json($type);
         }
@@ -302,15 +276,15 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    multi method update-document(Sofa::Database:D: Document:D $doc, %document ) returns Document {
+    multi method update-document(Sofa::Database:D: Sofa::Document:D $doc, %document ) returns Sofa::Document {
         samewith($doc.id, $doc.rev, %document);
     }
 
-    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Document {
+    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Sofa::Document {
         self!put-document(%document, $doc-id, $doc-rev);
     }
 
-    multi method update-document(Sofa::Database:D: DocumentWrapper $document) returns Document {
+    multi method update-document(Sofa::Database:D: Sofa::Document::Wrapper $document) returns Sofa::Document {
         my $doc = self!put-document($document, $document.sofa_document_id, $document.sofa_document_revision);
         $document.update-rev($doc);
         $doc;
@@ -324,26 +298,26 @@ class Sofa::Database does JSON::Class {
         }
         my $response = self.ua.put(:$path, content => $document, |%h);
         if $response.is-success {
-            $response.from-json(Document);
+            $response.from-json(Sofa::Document);
         }
         else {
             self!get-exception($response.code, $doc-id, $what).throw;
         }
     }
 
-    multi method delete-document(Sofa::Database:D: DocumentWrapper:D $doc) returns Document {
+    multi method delete-document(Sofa::Database:D: Sofa::Document::Wrapper:D $doc) returns Sofa::Document {
         samewith($doc.sofa_document_id, $doc.sofa_document_revision);
     }
 
-    multi method delete-document(Sofa::Database:D: Document:D $doc ) returns Document {
+    multi method delete-document(Sofa::Database:D: Sofa::Document:D $doc ) returns Sofa::Document {
         samewith($doc.id, $doc.rev);
     }
 
-    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev) returns Document {
+    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev) returns Sofa::Document {
         my $path = self.get-local-path(path => $doc-id);
         my $response = self.ua.delete(:$path, If-Match => $doc-rev);
         if $response.is-success {
-            $response.from-json(Document);
+            $response.from-json(Sofa::Document);
         }
         else {
             self!get-exception($response.code, $doc-id, 'deleting document').throw;

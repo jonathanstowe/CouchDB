@@ -53,7 +53,7 @@ is $db.all-docs.elems, 0, "and because it's new there aren't any rows";
 my %doc = ( foo => 1, bar => "baz" );
 ok my $doc = $db.create-document(%doc), "create a document";
 
-isa-ok $doc, Sofa::Database::Document, "and got back a Sofa::Database::Document";
+isa-ok $doc, Sofa::Document, "and got back a Sofa::Document";
 
 ok $doc.ok, "ok is true";
 ok $doc.id, "There is a id";
