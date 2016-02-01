@@ -3,7 +3,6 @@ use v6.c;
 use URI::Template;
 use HTTP::Request::Common;
 
-no precompilation;
 
 use HTTP::UserAgent ();
 
