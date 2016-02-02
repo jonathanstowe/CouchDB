@@ -7,12 +7,12 @@ use HTTP::Request::Common;
 use HTTP::UserAgent ();
 
 class Sofa::UserAgent is HTTP::UserAgent {
-    has Str  $.host = 'localhost';
-    has Int  $.port = 5984;
-    has Bool $.secure = False;
-    has Str  $.base-url;
-    has URI::Template $!base-template;
-    has      %.default-headers = (Accept => "application/json", Content-Type => "application/json");
+    has Str             $.host              = 'localhost';
+    has Int             $.port              = 5984;
+    has Bool            $.secure            = False;
+    has Str             $.base-url;
+    has URI::Template   $!base-template;
+    has                 %.default-headers   = (Accept => "application/json", Content-Type => "application/json");
 
     subset FromJSON of Mu where { $_.can('from-json') };
     subset ToJSON   of Mu where { $_.can('to-json') };
@@ -73,7 +73,6 @@ class Sofa::UserAgent is HTTP::UserAgent {
     multi method delete(Str :$path!, *%headers) returns CouchResponse {
         self.request(DELETE(self.process(:$path), |%!default-headers, |%headers)) but CouchResponse;
     }
-
 }
 
 # vim: expandtab shiftwidth=4 ft=perl6
