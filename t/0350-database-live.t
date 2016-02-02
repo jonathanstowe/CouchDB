@@ -25,14 +25,20 @@ my $db-count = $sofa.databases.elems;
 ok $db-count > 0, "got at least one database";
 
 # This might not be true on versions where the admindb is separate
-ok $sofa.databases.grep(*.name eq '_users'), "and we have the '_users'";
-is $sofa.databases.grep(*.name eq '_users').first.name, '_users', "and we have the right name";
+
+my $auth-db = $sofa.session.info.authentication-db;
+
+ok $sofa.databases.grep(*.name eq $auth-db), "and we have the '$auth-db'";
+is $sofa.databases.grep(*.name eq $auth-db).first.name, $auth-db, "and we have the right name";
+is $sofa.get-database($auth-db).name, $auth-db, "and get-database gives it do us";
 
 my $name = ('a' .. 'z').pick(8).join('');
 
 my $db ;
 
 throws-like { Sofa::Database.fetch(name => $name, ua => $sofa.ua) }, X::NoDatabase, "fetch no-exist database throws";
+
+nok $sofa.get-database($name).defined, "and get-database doesn't give us one";
 
 lives-ok { $db = $sofa.create-database($name) }, "create-database('$name')";
 
@@ -41,6 +47,8 @@ throws-like { $sofa.create-database($name) }, X::DatabaseExists, "create existin
 isa-ok $db, Sofa::Database, "and it returned the right sort of thing";
 is $db.name, $name, "and the right name is returned";
 is $sofa.databases.elems, $db-count + 1, "and we got one more database";
+
+is $sofa.get-database($name).name, $name, "and now get-database gives us the one we created";
 
 my @changes;
 

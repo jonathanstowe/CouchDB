@@ -42,14 +42,23 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
         @!databases;
    }
 
-   method create-database($name) {
+   method create-database(Str $name) {
        my $db;
-       if not @.databases.grep({ $_ eq $name } ) {
+       if not @.databases.grep({ $_.name eq $name } ) {
            $db = Sofa::Database.create(:$name, ua => self.ua);
            @.databases.push: $db;
        }
+       else {
+           X::DatabaseExists.new(:$name).throw;
+       }
        $db;
    }
+
+   method get-database(Str $name) returns Sofa::Database {
+       @.databases.grep({$_.name eq $name}).first;
+   }
+
+   method session() is sofa-item('Sofa::Session') { * }
 
    method statistics() is sofa-item('Sofa::Statistics') { * }
 

@@ -35,7 +35,7 @@ class Sofa::Database does JSON::Class {
     method local-template() returns URI::Template {
         if not $!local-template.defined {
             # may want to be + in our template
-            $!local-template = URI::Template.new(template => "/{ $!name }" ~ '/{+path}{?params*}');
+            $!local-template = URI::Template.new(template => "{ $!name }" ~ '/{+path}{?params*}');
         }
         $!local-template;
     }
@@ -327,6 +327,7 @@ class Sofa::Database does JSON::Class {
             self!get-exception($response.code, $doc-id, 'retrieving document', Document).throw;
         }
     }
+    
     multi method get-document(Sofa::Database:D: Str $doc-id, JSON::Class:U $c ) {
         my $path = self.get-local-path(path => $doc-id);
         my $response = self.ua.get(:$path);
