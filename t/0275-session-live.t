@@ -26,6 +26,7 @@ lives-ok { $session = $sofa.session }, "get our session";
 
 nok $session.is-authenticated, "not authenticated";
 ok  $session.is-admin, "is admin because admin party";
+ok  $sofa.is-admin, "and delegate on the Sofa object";
 is  $session.info.authentication-method, 'default', "and default authentication-method";
 is  $session.info.authentication-db, '_users', "and the authentication db";
 # Need this later to check whether we can do some of the tests without authenticating

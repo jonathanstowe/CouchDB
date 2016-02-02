@@ -58,7 +58,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
        @.databases.grep({$_.name eq $name}).first;
    }
 
-   method session() is sofa-item('Sofa::Session') { * }
+   method session() handles <is-admin> is sofa-item('Sofa::Session') { * }
 
    method statistics() is sofa-item('Sofa::Statistics') { * }
 
