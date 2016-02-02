@@ -268,6 +268,13 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    multi method create-document(Sofa::Database:D: Str $doc-id, JSON::Class $document) returns Sofa::Document {
+        $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
+        my $doc-info = self!put-document($document, $doc-id, what => 'creating document' );
+        $document.update-rev($doc-info);
+        $doc-info;
+    }
+
     sub design-id(Str $doc-id is copy) returns Str {
         if $doc-id !~~ /^_design\// {
             $doc-id = '_design/' ~ $doc-id;
