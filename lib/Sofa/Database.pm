@@ -239,16 +239,10 @@ class Sofa::Database does JSON::Class {
     }
 
 
-
+    proto method create-document(|c) { * }
 
     multi method create-document(Sofa::Database:D: %document) returns Sofa::Document {
-        my $response = self.ua.post(path => $!name, content => %document);
-        if $response.is-success {
-           $response.from-json(Sofa::Document);
-        }
-        else {
-            self!get-exception($response.code, $!name, 'creating document').throw;
-        }
+        self!post-document(%document, $!name);
     }
 
     multi method create-document(Sofa::Database:D: Str $doc-id, %document) returns Sofa::Document {
@@ -257,22 +251,13 @@ class Sofa::Database does JSON::Class {
 
     multi method create-document(Sofa::Database:D: JSON::Class $document) returns Sofa::Document {
         $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
-        my $response = self.ua.post(path => $!name, content => $document);
-        if $response.is-success {
-           my $doc = $response.from-json(Sofa::Document);
-           $document.update-rev($doc);
-           $doc;
-        }
-        else {
-            self!get-exception($response.code, $!name, 'creating document').throw;
-        }
+        self!post-document($document, $!name);
     }
+
 
     multi method create-document(Sofa::Database:D: Str $doc-id, JSON::Class $document) returns Sofa::Document {
         $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
-        my $doc-info = self!put-document($document, $doc-id, what => 'creating document' );
-        $document.update-rev($doc-info);
-        $doc-info;
+        self!put-document($document, $doc-id, what => 'creating document' );
     }
 
     sub design-id(Str $doc-id )  {
@@ -290,16 +275,14 @@ class Sofa::Database does JSON::Class {
     subset NamedDesign  of Sofa::Design where  { $_.defined && ( $_.name.defined || $_.sofa_document_id.defined ) };
     subset NoNameDesign of Sofa::Design where  { $_.defined && ( !$_.name.defined and !$_.sofa_document_id.defined ) };
 
+    proto method put-design(|c) { * }
+
     multi method put-design(Sofa::Database:D: NamedDesign $doc ) returns Sofa::Document {
-        my $doc-info = self!put-document($doc, $doc.id-or-name, $doc.sofa_document_revision, what => 'putting design document'); 
-        $doc.update-rev($doc-info);
-        $doc-info;
+        self!put-document($doc, $doc.id-or-name, $doc.sofa_document_revision, what => 'putting design document'); 
     }
 
     multi method put-design(Sofa::Database:D: NoNameDesign $doc, Str:D $doc-id ) returns Sofa::Document {
-        my $doc-info = self!put-document($doc, design-id($doc-id), $doc.sofa_document_revision, what => 'putting design document'); 
-        $doc.update-rev($doc-info);
-        $doc-info;
+        self!put-document($doc, design-id($doc-id), $doc.sofa_document_revision, what => 'putting design document'); 
     }
 
     # Because we might not dealing with one we created ourself $!name can't be required
@@ -308,7 +291,7 @@ class Sofa::Database does JSON::Class {
     }
 
     proto method delete-design(|c) { * }
-    # just for consistency
+
     multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc) returns Sofa::Document {
         self!delete-document(design-id($doc.id), $doc.rev);
     }
@@ -344,6 +327,52 @@ class Sofa::Database does JSON::Class {
         self!get-document($doc-id, type => $c);
     }
 
+
+    proto method update-document(|c) { * }
+
+    multi method update-document(Sofa::Database:D: Sofa::Document:D $doc, %document ) returns Sofa::Document {
+        samewith($doc.id, $doc.rev, %document);
+    }
+
+    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Sofa::Document {
+        self!put-document(%document, $doc-id, $doc-rev);
+    }
+
+    multi method update-document(Sofa::Database:D: Sofa::Document::Wrapper $document) returns Sofa::Document {
+        self!put-document($document, $document.sofa_document_id, $document.sofa_document_revision);
+    }
+
+
+    proto method delete-document(|c) { * }
+
+    multi method delete-document(Sofa::Database:D: Sofa::Document::Wrapper:D $doc) returns Sofa::Document {
+        samewith($doc.sofa_document_id, $doc.sofa_document_revision);
+    }
+
+    multi method delete-document(Sofa::Database:D: Sofa::Document:D $doc ) returns Sofa::Document {
+        samewith($doc.id, $doc.rev);
+    }
+
+    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev) returns Sofa::Document {
+        self!delete-document($doc-id, $doc-rev);
+    }
+
+    proto method delete(|c) { * }
+
+    multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {
+        my $response = $ua.delete(path => $name);
+        if not $response.is-success {
+            self!get-exception($response.code, $name, 'delete').throw;
+        }
+        True;
+    }
+
+    multi method delete(Sofa::Database:D:) returns Bool {
+        my $a = Sofa::Database.delete(name => $!name, ua => $!ua);
+        $!delete-promise.keep if $a;
+        $a;
+    }
+
     # Hack to be able to determine whether we got a real class
     my class NoType {}
 
@@ -367,18 +396,18 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    multi method update-document(Sofa::Database:D: Sofa::Document:D $doc, %document ) returns Sofa::Document {
-        samewith($doc.id, $doc.rev, %document);
-    }
-
-    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Sofa::Document {
-        self!put-document(%document, $doc-id, $doc-rev);
-    }
-
-    multi method update-document(Sofa::Database:D: Sofa::Document::Wrapper $document) returns Sofa::Document {
-        my $doc = self!put-document($document, $document.sofa_document_id, $document.sofa_document_revision);
-        $document.update-rev($doc);
-        $doc;
+    method !post-document($document, $path, :$what = 'creating document') returns Sofa::Document {
+        my $response = self.ua.post(path => $path, content => $document);
+        if $response.is-success {
+            my $doc = $response.from-json(Sofa::Document);
+            if $document.can('update-rev') {
+                $document.update-rev($doc);
+            }
+            $doc;
+        }
+        else {
+            self!get-exception($response.code, $!name, $what).throw;
+        }
     }
 
     method !put-document($document, $doc-id, Str $doc-rev?, :$what = 'updating document') {
@@ -389,23 +418,15 @@ class Sofa::Database does JSON::Class {
         }
         my $response = self.ua.put(:$path, content => $document, |%h);
         if $response.is-success {
-            $response.from-json(Sofa::Document);
+            my $ddoc = $response.from-json(Sofa::Document);
+            if $document.can('update-rev') {
+                $document.update-rev($ddoc);
+            }
+            $ddoc;
         }
         else {
             self!get-exception($response.code, $doc-id, $what).throw;
         }
-    }
-
-    multi method delete-document(Sofa::Database:D: Sofa::Document::Wrapper:D $doc) returns Sofa::Document {
-        samewith($doc.sofa_document_id, $doc.sofa_document_revision);
-    }
-
-    multi method delete-document(Sofa::Database:D: Sofa::Document:D $doc ) returns Sofa::Document {
-        samewith($doc.id, $doc.rev);
-    }
-
-    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev) returns Sofa::Document {
-        self!delete-document($doc-id, $doc-rev);
     }
 
     method !delete-document(Sofa::Database:D: $doc-id, Str $doc-rev) {
@@ -420,19 +441,6 @@ class Sofa::Database does JSON::Class {
     }
 
 
-    multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {
-        my $response = $ua.delete(path => $name);
-        if not $response.is-success {
-            self!get-exception($response.code, $name, 'delete').throw;
-        }
-        True;
-    }
-
-    multi method delete(Sofa::Database:D:) returns Bool {
-        my $a = Sofa::Database.delete(name => $!name, ua => $!ua);
-        $!delete-promise.keep if $a;
-        $a;
-    }
     
 }
 
