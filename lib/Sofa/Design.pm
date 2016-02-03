@@ -44,8 +44,8 @@ class Sofa::Design does JSON::Class does Sofa::Document::Wrapper {
         $!name;
     }
 
-    method id-or-name() returns Str {
-        $!sofa_document_id // '_design/' ~ $!name;
+    method id-or-name() {
+        $!sofa_document_id ?? $!sofa_document_id.split('/') !! ['_design', $!name ];
     }
 }
 
