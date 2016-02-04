@@ -26,22 +26,12 @@ class Sofa::Database does JSON::Class {
 
     has Sofa::UserAgent $.ua is rw;
 
-    has URI::Template $!local-template;
-
     has Supply        $!changes-supply;
 
     has Promise       $!delete-promise = Promise.new;
 
-    method local-template() returns URI::Template {
-        if not $!local-template.defined {
-            # may want to be + in our template
-            $!local-template = URI::Template.new(template => "{ $!name }" ~ '{/path*}{?params*}');
-        }
-        $!local-template;
-    }
-
-    method get-local-path(*%parts) returns Str {
-        self.local-template.process(|%parts);
+    method get-local-path(*%parts) {
+         [ flat $!name, %parts<path>.flat.grep({.defined}) ];
     }
 
     class X::InvalidName is Exception {
@@ -174,8 +164,8 @@ class Sofa::Database does JSON::Class {
             %params<include_docs> = "true";
 
         }
-        my $path = self.get-local-path(path => '_all_docs', params => %params);
-        my $response = self.ua.get(path => $path);
+        my $path = self.get-local-path(path => '_all_docs');
+        my $response = self.ua.get(path => $path, params => %params);
         if $response.is-success {
             $response.from-json<rows>;
         }
@@ -229,7 +219,7 @@ class Sofa::Database does JSON::Class {
             %header<Last-Event-ID> = $last-seq;
         }
 
-        my $response = self.ua.get(path => $path, |%header );
+        my $response = self.ua.get(path => $path, params => %params, |%header );
         if $response.is-success {
             $response.from-json;
         }
@@ -290,14 +280,6 @@ class Sofa::Database does JSON::Class {
         X::NoIdOrName.new.throw;
     }
 
-    proto method delete-design(|c) { * }
-
-    multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc) returns Sofa::Document {
-        self!delete-document(design-id($doc.id), $doc.rev, what => 'deleting design');
-    }
-    multi method delete-design(Sofa::Database:D: Sofa::Design:D $doc ) returns Sofa::Document {
-        self!delete-document($doc.id-or-name, $doc.sofa_document_revision, what => 'deleting design');
-    }
 
     proto method get-design(|c) { * }
 
@@ -308,6 +290,59 @@ class Sofa::Database does JSON::Class {
     multi method get-design(Sofa::Database:D: Str $doc-id) returns Sofa::Design {
         self!get-document(design-id($doc-id), type => Sofa::Design, what => 'getting design');
     }
+
+    class ViewResponse does JSON::Class {
+        class Row {
+            has Str $.id;
+            has Str $.key;
+            has     $.value;
+        }
+        has Int $.offset;
+        has Int $.total_rows;
+        has Row @.rows;
+    }
+
+    proto method get-view(|c) { * }
+
+    multi method get-view(Sofa::Database:D: Sofa::Design:D $design, Str $view-name, *@keys) {
+        if $design.views{$view-name}:exists {
+            my @design-parts = flat $design.id-or-name.flat, '_view', $view-name;
+            my %params;
+
+            my Bool $use-post = False;
+
+            my %content;
+
+            if @keys {
+                if @keys.elems == 1 {
+                    %params<key> = '"' ~ @keys[0] ~ '"';
+                }
+                else {
+                    %content<keys> = @keys;
+                    $use-post = True;
+                }
+            }
+            if $use-post {
+                self!post-document(%content, @design-parts, type => ViewResponse, params => %params, what => 'retrieving view', :no-wrapper)
+            }
+            else {
+                self!get-document(@design-parts, type => ViewResponse, params => %params, what => 'retrieving view', :no-wrapper)
+            }
+        }
+        else {
+            X::NoDocument.new(name => $view-name, what => "getting view").throw;
+        }
+    }
+
+    proto method delete-design(|c) { * }
+
+    multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc) returns Sofa::Document {
+        self!delete-document(design-id($doc.id), $doc.rev, what => 'deleting design');
+    }
+    multi method delete-design(Sofa::Database:D: Sofa::Design:D $doc ) returns Sofa::Document {
+        self!delete-document($doc.id-or-name, $doc.sofa_document_revision, what => 'deleting design');
+    }
+
 
     proto method get-document(|c) { * }
 
@@ -376,12 +411,12 @@ class Sofa::Database does JSON::Class {
     # Hack to be able to determine whether we got a real class
     my class NoType {}
 
-    method !get-document(Sofa::Database:D: $doc-id, Mu:U :$type = NoType, :%params, :%headers, Str :$what = 'retrieving document' ) {
-        my $path = self.get-local-path(path => $doc-id, params => %params);
-        my $response = self.ua.get(:$path, |%headers);
+    method !get-document(Sofa::Database:D: $doc-id, Mu:U :$type = NoType, Bool :$no-wrapper, :%params, :%headers, Str :$what = 'retrieving document' ) {
+        my $path = self.get-local-path(path => $doc-id);
+        my $response = self.ua.get(:$path, :%params, |%headers);
 
         my $wrapped-type = do if  $type !~~ NoType {
-            $type ~~ Sofa::Document::Wrapper ?? $type !! $type but Sofa::Document::Wrapper;
+            $no-wrapper ?? $type !! $type ~~ Sofa::Document::Wrapper ?? $type !! $type but Sofa::Document::Wrapper;
         }
         if $response.is-success {
             if $type ~~ NoType {
@@ -396,12 +431,12 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    method !post-document($document, $doc-id, :%params, :%headers, :$what = 'creating document') returns Sofa::Document {
-        my $path = self.get-local-path(path => $doc-id, params => %params);
-        my $response = self.ua.post(path => $path, content => $document, |%headers);
+    method !post-document($document, $doc-id, Mu:U :$type = Sofa::Document, :%params, :%headers, :$what = 'creating document') {
+        my $path = self.get-local-path(path => $doc-id);
+        my $response = self.ua.post(path => $path, :%params, content => $document, |%headers);
         if $response.is-success {
-            my $doc = $response.from-json(Sofa::Document);
-            if $document.can('update-rev') {
+            my $doc = $response.from-json($type);
+            if $document.can('update-rev') && $type ~~ Sofa::Document {
                 $document.update-rev($doc);
             }
             $doc;
@@ -412,13 +447,13 @@ class Sofa::Database does JSON::Class {
     }
 
     method !put-document($document, $doc-id, Str $doc-rev?, :%params, :%headers, :$what = 'updating document') {
-        my $path = self.get-local-path(path => $doc-id, params => %params);
+        my $path = self.get-local-path(path => $doc-id);
         if $doc-rev.defined {
             if not %headers<If-Match>:exists {
                 %headers<If-Match> = $doc-rev;
             }
         }
-        my $response = self.ua.put(:$path, content => $document, |%headers);
+        my $response = self.ua.put(:$path, :%params, content => $document, |%headers);
         if $response.is-success {
             my $ddoc = $response.from-json(Sofa::Document);
             if $document.can('update-rev') {
@@ -432,13 +467,13 @@ class Sofa::Database does JSON::Class {
     }
 
     method !delete-document(Sofa::Database:D: $doc-id, Str $doc-rev, :%params, :%headers, Str :$what = 'deleting document') {
-        my $path = self.get-local-path(path => $doc-id, params => %params);
+        my $path = self.get-local-path(path => $doc-id);
         if $doc-rev.defined {
             if not %headers<If-Match>:exists {
                 %headers<If-Match> = $doc-rev;
             }
         }
-        my $response = self.ua.delete(:$path, |%headers);
+        my $response = self.ua.delete(:$path, :%params, |%headers);
         if $response.is-success {
             $response.from-json(Sofa::Document);
         }

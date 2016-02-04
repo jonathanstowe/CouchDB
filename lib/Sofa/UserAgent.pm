@@ -30,7 +30,7 @@ class Sofa::UserAgent is HTTP::UserAgent {
 
     method base-url() returns Str {
         if not $!base-url.defined {
-            $!base-url = 'http' ~ ($!secure ?? 's' !! '') ~ '://' ~ $!host ~ ':' ~ $!port.Str ~ '/{+path}';
+            $!base-url = 'http' ~ ($!secure ?? 's' !! '') ~ '://' ~ $!host ~ ':' ~ $!port.Str ~ '{/path*}{?params*}';
         }
         $!base-url;
     }
@@ -42,36 +42,44 @@ class Sofa::UserAgent is HTTP::UserAgent {
         $!base-template;
     }
 
-    multi method get(:$path!, *%headers) returns CouchResponse {
-        self.request(GET(self.process(:$path), |%!default-headers, |%headers)) but CouchResponse;
+    proto method get(|c) { * }
+
+    multi method get(:$path!, :$params, *%headers) returns CouchResponse {
+        self.request(GET(self.process(:$path, :$params), |%!default-headers, |%headers)) but CouchResponse;
     }
 
-    multi method put(Str :$path!, Str :$content, *%headers) returns CouchResponse {
-        self.request(PUT(self.process(:$path), :$content, |%!default-headers, |%headers)) but CouchResponse;
+    proto method put(|c) { * }
+
+    multi method put(:$path!, :$params, Str :$content, *%headers) returns CouchResponse {
+        self.request(PUT(self.process(:$path, :$params), :$content, |%!default-headers, |%headers)) but CouchResponse;
     }
 
-    multi method put(Str :$path!, :%content, *%headers) returns CouchResponse {
-        samewith(:$path, content => to-json(%content), |%headers);
+    multi method put(:$path!, :$params, :%content, *%headers) returns CouchResponse {
+        samewith(:$path, :$params, content => to-json(%content), |%headers);
     }
 
-    multi method put(Str :$path!, ToJSON :$content, *%headers) returns CouchResponse {
-        samewith(:$path, content => $content.to-json, |%headers);
+    multi method put(:$path!, :$params, ToJSON :$content, *%headers) returns CouchResponse {
+        samewith(:$path, :$params, content => $content.to-json, |%headers);
     }
 
-    multi method post(Str :$path!, Str :$content, *%headers) returns CouchResponse {
-        self.request(POST(self.process(:$path), :$content, |%!default-headers)) but CouchResponse;
+    proto method post(|c) { * }
+
+    multi method post(:$path!, :$params, Str :$content, *%headers) returns CouchResponse {
+        self.request(POST(self.process(:$path, :$params), :$content, |%!default-headers)) but CouchResponse;
     }
 
-    multi method post(Str :$path!, :%content, *%headers) returns CouchResponse {
-        samewith(:$path, content => to-json(%content), |%headers);
+    multi method post(:$path!, :$params, :%content, *%headers) returns CouchResponse {
+        samewith(:$path, :$params, content => to-json(%content), |%headers);
     }
 
-    multi method post(Str :$path!, ToJSON :$content, *%headers) returns CouchResponse {
-        samewith(:$path, content => $content.to-json, |%headers);
+    multi method post(:$path!, :$params,  ToJSON :$content, *%headers) returns CouchResponse {
+        samewith(:$path, :$params, content => $content.to-json, |%headers);
     }
 
-    multi method delete(Str :$path!, *%headers) returns CouchResponse {
-        self.request(DELETE(self.process(:$path), |%!default-headers, |%headers)) but CouchResponse;
+    proto method delete(|c) { * }
+
+    multi method delete(:$path!, :$params, *%headers) returns CouchResponse {
+        self.request(DELETE(self.process(:$path, :$params), |%!default-headers, |%headers)) but CouchResponse;
     }
 }
 

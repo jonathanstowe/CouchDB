@@ -1,0 +1,16 @@
+{
+    "_id": "_design/test-design",
+    "name" : "test-design",
+    "language": "javascript",
+    "views": {
+        "by-name": {
+            "map": "function(doc) { if (doc.name) { emit(doc.name,doc); } }"
+        }
+    },
+    "lists": {
+    },
+    "updates": {
+    },
+    "shows": {
+    }
+}
