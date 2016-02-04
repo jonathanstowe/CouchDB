@@ -376,7 +376,7 @@ class Sofa::Database does JSON::Class {
     # Hack to be able to determine whether we got a real class
     my class NoType {}
 
-    method !get-document(Sofa::Database:D: $doc-id, Mu:U :$type = NoType ) {
+    method !get-document(Sofa::Database:D: $doc-id, Mu:U :$type = NoType, Str :$what = 'retrieving document' ) {
         my $path = self.get-local-path(path => $doc-id);
         my $response = self.ua.get(:$path);
 
@@ -392,7 +392,7 @@ class Sofa::Database does JSON::Class {
             }
         }
         else {
-            self!get-exception($response.code, $doc-id.join('/'), 'retrieving document', Document).throw;
+            self!get-exception($response.code, $doc-id.join('/'), $what, Document).throw;
         }
     }
 
@@ -429,14 +429,14 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    method !delete-document(Sofa::Database:D: $doc-id, Str $doc-rev) {
+    method !delete-document(Sofa::Database:D: $doc-id, Str $doc-rev, Str :$what = 'deleting document') {
         my $path = self.get-local-path(path => $doc-id);
         my $response = self.ua.delete(:$path, If-Match => $doc-rev);
         if $response.is-success {
             $response.from-json(Sofa::Document);
         }
         else {
-            self!get-exception($response.code, $doc-id, 'deleting document').throw;
+            self!get-exception($response.code, $doc-id, $what).throw;
         }
     }
 
