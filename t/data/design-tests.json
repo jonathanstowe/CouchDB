@@ -8,6 +8,7 @@
         }
     },
     "lists": {
+		 "list-names" : "function(head, req) { var names = { 'names' : [], 'query' : req.query }; while(row = getRow()) { names.names.push(row.value.name) }; send(toJSON(names)); }"
     },
     "updates": {
     },
