@@ -378,6 +378,28 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    proto method get-list(|c) { * }
+
+    multi method get-list(Sofa::Database:D: Str $design-name, |c) {
+        my $design = self.get-design($design-name);
+        samewith($design, |c);
+    }
+
+    multi method get-list(Sofa::Database:D: Sofa::Design:D $design, Str $list-name, Str $view-id, *%params) {
+        if $design.lists{$list-name}:exists {
+            if $design.views{$view-id}:exists {
+                my @design-parts = flat $design.id-or-name.flat, '_list', $list-name, $view-id;
+                self!get-document(@design-parts, params => %params, what => 'retrieving list');
+            }
+            else {
+                X::NoDocument.new(name => $view-id, what => 'getting view for list').throw;
+            }
+        }
+        else {
+            X::NoDocument.new(name => $list-name, what => "getting list").throw;
+        }
+    }
+
     proto method delete-design(|c) { * }
 
     multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc) returns Sofa::Document {

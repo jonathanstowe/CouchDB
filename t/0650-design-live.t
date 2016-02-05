@@ -170,6 +170,15 @@ like $show-data, /'Hello, World'/, "and it looks like we got what we expected";
 lives-ok { $show-data = $db.get-show($design.name, 'html-response'); }, "get-show with non-json data (but with a name for the design)";
 like $show-data, /'Hello, World'/, "and it looks like we got what we expected";
 
+my $list-data;
+lives-ok { $list-data = $db.get-list($design, 'list-names','by-name', something => 'other') }, "get list with our earlier view";
+is-deeply $list-data<names>, [@rows.map({$_.value<name> })], "and we got the view data back we expected";
+is $list-data<query><something>, 'other', "and the query parameter we passed in";
+
+lives-ok { $list-data = $db.get-list($design.name, 'list-names','by-name', something => 'other') }, "get list with our earlier view (design by name)";
+is-deeply $list-data<names>, [@rows.map({$_.value<name> })], "and we got the view data back we expected";
+is $list-data<query><something>, 'other', "and the query parameter we passed in";
+
 lives-ok { $db.delete }, "delete the database";
 
 done-testing;
