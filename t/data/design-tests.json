@@ -12,5 +12,7 @@
     "updates": {
     },
     "shows": {
+	 	 "echo-request": "function(doc, req) { return { 'json' : req } }",
+       "html-response": "function(doc, req) { return '<h1>Hello, World</h1><pre>' + toJSON(req) + '</pre>' }"
     }
 }
