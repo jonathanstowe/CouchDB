@@ -70,8 +70,8 @@ my @objects;
 
 for <one two three four five six> -> $name {
     my $dt = DesignTest.new(:$name, some-data => "$name data", number => $++ );
-    @objects.append: $dt;
     $db.create-document($dt);
+    @objects.append: $dt;
 }
 
 is $db.all-docs.elems, 7, "now have six documents ( and a design document)";
@@ -135,6 +135,40 @@ for ^$view-data.rows.elems -> $i {
 lives-ok { $view-data = $db.get-view($design, 'by-name', :descending) }, "get-view(:descending)";
 my @new-rows = $view-data.rows;
 is-deeply @new-rows, @rows.reverse, "and it looks like it's the same (as anticipated)";
+
+
+lives-ok { $view-data = $db.get-view($design.name, 'by-name', :descending) }, "get-view by names (with descending to check we pass the args on)";
+@new-rows = $view-data.rows;
+is-deeply @new-rows, @rows.reverse, "and it looks like it's the same (as anticipated)";
+
+my $show-data;
+
+lives-ok { $show-data = $db.get-show($design, 'echo-request', foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on with no document specified";
+is $show-data<query><foo>, "bar", "got back the param we sent";
+is $show-data<query><baz>, "Boom", "got back the other param we sent";
+nok $show-data<id>.defined, "and the id isn't defined because we didn't ask for a document";
+
+lives-ok { $show-data = $db.get-show($design, 'echo-request', @objects[1].sofa_document_id, foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on";
+is $show-data<query><foo>, "bar", "got back the param we sent";
+is $show-data<query><baz>, "Boom", "got back the other param we sent";
+ok $show-data<id>.defined, "and the id is defined because we did ask for a document";
+is $show-data<id>, @objects[1].sofa_document_id, "and got back the document id";
+
+lives-ok { $show-data = $db.get-show($design.name, 'echo-request', foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on with no document specified with named design";
+is $show-data<query><foo>, "bar", "got back the param we sent";
+is $show-data<query><baz>, "Boom", "got back the other param we sent";
+nok $show-data<id>.defined, "and the id isn't defined because we didn't ask for a document";
+
+lives-ok { $show-data = $db.get-show($design.name, 'echo-request', @objects[1].sofa_document_id, foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on with named design";
+is $show-data<query><foo>, "bar", "got back the param we sent";
+is $show-data<query><baz>, "Boom", "got back the other param we sent";
+ok $show-data<id>.defined, "and the id is defined because we did ask for a document";
+is $show-data<id>, @objects[1].sofa_document_id, "and got back the document id";
+
+lives-ok { $show-data = $db.get-show($design, 'html-response'); }, "get-show with non-json data";
+like $show-data, /'Hello, World'/, "and it looks like we got what we expected";
+lives-ok { $show-data = $db.get-show($design.name, 'html-response'); }, "get-show with non-json data (but with a name for the design)";
+like $show-data, /'Hello, World'/, "and it looks like we got what we expected";
 
 lives-ok { $db.delete }, "delete the database";
 

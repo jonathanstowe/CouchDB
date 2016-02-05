@@ -306,6 +306,11 @@ class Sofa::Database does JSON::Class {
 
     proto method get-view(|c) { * }
 
+    multi method get-view(Sofa::Database:D: Str $design-name, |c) {
+        my $design = self.get-design($design-name);
+        samewith($design, |c);
+    }
+
     multi method get-view(Sofa::Database:D: Sofa::Design:D $design, Str $view-name, Bool :$descending, Str :$start-key, Str :$end-key, Int :$skip, Int :$limit, *@keys) {
         if $design.views{$view-name}:exists {
             my @design-parts = flat $design.id-or-name.flat, '_view', $view-name;
@@ -352,6 +357,24 @@ class Sofa::Database does JSON::Class {
         }
         else {
             X::NoDocument.new(name => $view-name, what => "getting view").throw;
+        }
+    }
+
+    proto method get-show(|c) { * }
+
+    multi method get-show(Sofa::Database:D: Str $design-name, |c) {
+        my $design = self.get-design($design-name);
+        samewith($design, |c);
+    }
+
+    multi method get-show(Sofa::Database:D: Sofa::Design:D $design, Str $show-name, Str $doc-id?, *%params) {
+        if $design.shows{$show-name}:exists {
+            my @design-parts = flat $design.id-or-name.flat, '_show', $show-name, $doc-id;
+            self!get-document(@design-parts, params => %params, what => 'retrieving show');
+
+        }
+        else {
+            X::NoDocument.new(name => $show-name, what => "getting show").throw;
         }
     }
 
@@ -440,15 +463,20 @@ class Sofa::Database does JSON::Class {
             $no-wrapper ?? $type !! $type ~~ Sofa::Document::Wrapper ?? $type !! $type but Sofa::Document::Wrapper;
         }
         if $response.is-success {
-            if $type ~~ NoType {
-                $response.from-json;
+            if $response.is-json {
+                if $type ~~ NoType {
+                    $response.from-json;
+                }
+                else {
+                    $response.from-json($wrapped-type);
+                }
             }
             else {
-                $response.from-json($wrapped-type);
+                $response.content;
             }
         }
         else {
-            self!get-exception($response.code, $doc-id.join('/'), $what, Document).throw;
+            self!get-exception($response.code, $doc-id.grep({.defined}).join('/'), $what, Document).throw;
         }
     }
 
