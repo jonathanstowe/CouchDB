@@ -19,6 +19,15 @@ class Sofa::UserAgent is HTTP::UserAgent {
     subset LikeJSONClass of Mu where all(FromJSON,ToJSON);
 
     role CouchResponse {
+        method is-json() returns Bool {
+            if self.content-type eq 'application/json' {
+                True
+            }
+            else {
+                False
+            }
+        }
+
         multi method from-json() {
             from-json(self.content);
         }
