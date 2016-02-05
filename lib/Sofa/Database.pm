@@ -25,10 +25,8 @@ class Sofa::Database does JSON::Class {
     has Str         $.name                is json-name('db_name');
 
     has Sofa::UserAgent $.ua is rw;
-
-    has Supply        $!changes-supply;
-
-    has Promise       $!delete-promise = Promise.new;
+    has Supply          $!changes-supply;
+    has Promise         $!delete-promise = Promise.new;
 
     method get-local-path(*%parts) {
          [ flat $!name, %parts<path>.flat.grep({.defined}) ];
@@ -219,12 +217,12 @@ class Sofa::Database does JSON::Class {
             %header<Last-Event-ID> = $last-seq;
         }
 
-        my $response = self.ua.get(path => $path, params => %params, |%header );
+        my $response = self.ua.get(:$path, :%params, |%header );
         if $response.is-success {
             $response.from-json;
         }
         else {
-            self!get-exception($response.code, $!name, 'getting all docs').throw;
+            self!get-exception($response.code, $!name, 'getting changes').throw;
         }
     }
 
@@ -302,9 +300,13 @@ class Sofa::Database does JSON::Class {
         has Row @.rows;
     }
 
+    sub stringify-key($key) returns Str {
+        '"' ~ $key.Str ~ '"';
+    }
+
     proto method get-view(|c) { * }
 
-    multi method get-view(Sofa::Database:D: Sofa::Design:D $design, Str $view-name, *@keys) {
+    multi method get-view(Sofa::Database:D: Sofa::Design:D $design, Str $view-name, Bool :$descending, Str :$start-key, Str :$end-key, Int :$skip, Int :$limit, *@keys) {
         if $design.views{$view-name}:exists {
             my @design-parts = flat $design.id-or-name.flat, '_view', $view-name;
             my %params;
@@ -315,13 +317,32 @@ class Sofa::Database does JSON::Class {
 
             if @keys {
                 if @keys.elems == 1 {
-                    %params<key> = '"' ~ @keys[0] ~ '"';
+                    %params<key> = stringify-key(@keys[0]);
                 }
                 else {
                     %content<keys> = @keys;
                     $use-post = True;
                 }
             }
+
+            if $limit.defined {
+                %params<limit> = $limit;
+            }
+            if $skip.defined {
+                %params<skip> = $skip;
+            }
+
+            if $start-key.defined {
+                %params<startkey> = stringify-key($start-key);
+            }
+            if $end-key.defined {
+                %params<endkey> = stringify-key($end-key);
+            }
+
+            if $descending {
+                %params<descending> = 'true';
+            }
+
             if $use-post {
                 self!post-document(%content, @design-parts, type => ViewResponse, params => %params, what => 'retrieving view', :no-wrapper)
             }

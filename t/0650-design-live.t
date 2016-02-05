@@ -66,8 +66,11 @@ class DesignTest does JSON::Class {
     has Int $.number;
 }
 
+my @objects;
+
 for <one two three four five six> -> $name {
     my $dt = DesignTest.new(:$name, some-data => "$name data", number => $++ );
+    @objects.append: $dt;
     $db.create-document($dt);
 }
 
@@ -78,6 +81,9 @@ my $view-data;
 lives-ok { $view-data = $db.get-view($design, 'by-name') ; }, "get-view";
 is $view-data.total_rows, 6, "got the six rows we expected";
 is $view-data.rows.elems, 6, "and there are six in the rows";
+
+# Makes it easier to check the rest
+my @rows = $view-data.rows;
 
 
 lives-ok { $view-data = $db.get-view($design, 'by-name', 'three') ; }, "get-view (with a single key)";
@@ -93,6 +99,42 @@ is $view-data.rows[0].value<name>, 'one', "just check we got the row we wanted";
 is $view-data.rows[0].value<number>, 0, "right number";
 is $view-data.rows[1].value<name>, 'three', "just check we got the row we wanted";
 is $view-data.rows[1].value<number>, 2, "right number";
+
+lives-ok { $view-data = $db.get-view($design, 'by-name', limit => 2 ) ; }, "get-view (with limit => 2)";
+is $view-data.total_rows, 6, "got the total rows we expected";
+is $view-data.rows.elems, 2, "and there are two in the rows";
+
+for ^$view-data.rows.elems -> $i {
+    is-deeply $view-data.rows[$i], @rows[$i], "check the row we expected (row[$i])";
+}
+
+lives-ok { $view-data = $db.get-view($design, 'by-name', limit => 2, skip => 2 ) ; }, "get-view (with limit => 2, skip => 2)";
+is $view-data.total_rows, 6, "got the total rows we expected";
+is $view-data.rows.elems, 2, "and there are two in the rows";
+
+for ^$view-data.rows.elems -> $i {
+    is-deeply $view-data.rows[$i], @rows[$i + 2], "check the row we expected (row[{ $i + 2}])";
+}
+
+lives-ok { $view-data = $db.get-view($design, 'by-name', start-key => @rows[2].value<name>) ; }, "get-view (with start-key => {@rows[2].value<name>})";
+is $view-data.rows.elems, 4, "and there are four in the rows";
+
+for ^$view-data.rows.elems -> $i {
+    is-deeply $view-data.rows[$i], @rows[$i + 2], "check the row we expected (row[{ $i + 2}])";
+}
+
+lives-ok { $view-data = $db.get-view($design, 'by-name', start-key => @rows[2].value<name>, end-key =>  @rows[3].value<name>) ; }, "get-view (with start-key => {@rows[2].value<name>}, end-key => {  @rows[3].value<name> })";
+
+is $view-data.rows.elems, 2, "and there are four in the rows";
+
+for ^$view-data.rows.elems -> $i {
+    is-deeply $view-data.rows[$i], @rows[$i + 2], "check the row we expected (row[{ $i + 2}])";
+}
+
+
+lives-ok { $view-data = $db.get-view($design, 'by-name', :descending) }, "get-view(:descending)";
+my @new-rows = $view-data.rows;
+is-deeply @new-rows, @rows.reverse, "and it looks like it's the same (as anticipated)";
 
 lives-ok { $db.delete }, "delete the database";
 
