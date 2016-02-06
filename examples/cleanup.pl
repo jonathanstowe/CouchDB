@@ -11,16 +11,25 @@ my $port = 5984;
 
 multi sub MAIN(Str :$host = 'localhost', Int :$port = 5984, Bool :$dry-run = False, :@exclude-db?) {
     my $sofa = Sofa.new(:$host, :$port);
-    my @exc = (<_users contacts _replicator>, @exclude-db).flat;
-    for $sofa.databases.grep({$_.name  ~~ none(@exc)}) -> $db {
-        if $dry-run {
-            say "would have deleted : ", $db.name;
+
+    if $sofa.is-admin {
+        my Int $deleted-count = 0;
+        my @exc = (<_users contacts _replicator>, @exclude-db).flat;
+        for $sofa.databases.grep({$_.name  ~~ none(@exc)}) -> $db {
+            $deleted-count++;
+            if $dry-run {
+                say "would have deleted : ", $db.name;
+            }
+            else {
+                say "deleting : ", $db.name;
+                $db.delete ;
+            }
         }
-        else {
-            say "deleting : ", $db.name;
-            $db.delete ;
-        }
-   }
+        say $deleted-count ?? "Deleted { $deleted-count } databases" !! 'Nothing to delete';
+    }
+    else {
+        $*ERR.say("Not admin, can't delete databases");
+    }
 }
 
 # vim: expandtab shiftwidth=4 ft=perl6
