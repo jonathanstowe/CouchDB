@@ -10,6 +10,8 @@ use Sofa;
 my $port = %*ENV<COUCH_PORT> // 5984;
 my $host = %*ENV<COUCH_HOST> // 'localhost';
 
+my Bool $test-changes = %*ENV<SOFA_TEST_CHANGES>:exists;
+
 if !check-socket($port, $host) {
     plan 1;
     skip-rest "no couchdb available";
@@ -52,9 +54,13 @@ is $sofa.get-database($name).name, $name, "and now get-database gives us the one
 
 my @changes;
 
-ok $db.get-changes(), "get-changes";
-
-lives-ok { $db.changes-supply.tap({ @changes.push($_); }); }, "tap the changes-supply";
+if $test-changes {
+    ok $db.get-changes(), "get-changes";
+    lives-ok { $db.changes-supply.tap({ @changes.push($_); }); }, "tap the changes-supply";
+}
+else {
+    skip "SOFA_TEST_CHANGES not set, not testing",2;
+}
 
 is $db.all-docs.elems, 0, "and because it's new there aren't any rows";
 
@@ -126,9 +132,13 @@ lives-ok { $db.delete-document($named-doc-doc.id, $named-doc-doc.rev) }, "delete
 is $db.all-docs.elems, 0, "and the document went away";
 
 
-ok @changes.elems > 0, "and we saw some changes on the supply";
-
-is @changes.classify({ $_<seq> }).values.grep({ $_.elems > 1}).elems, 0, "and there are no duplicates";
+if $test-changes {
+    ok @changes.elems > 0, "and we saw some changes on the supply";
+    is @changes.classify({ $_<seq> }).values.grep({ $_.elems > 1}).elems, 0, "and there are no duplicates";
+}
+else {
+    skip "SOFA_TEST_CHANGES not set, not testing",2;
+}
 
 lives-ok { $db.delete }, "delete the database";
 
