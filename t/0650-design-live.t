@@ -64,6 +64,7 @@ class DesignTest does JSON::Class {
     has Str $.name;
     has Str $.some-data;
     has Int $.number;
+    has Str %.req;
 }
 
 my @objects;
