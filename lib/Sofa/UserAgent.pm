@@ -73,8 +73,15 @@ class Sofa::UserAgent is HTTP::UserAgent {
 
     proto method post(|c) { * }
 
-    multi method post(:$path!, :$params, Str :$content, *%headers) returns CouchResponse {
-        self.request(POST(self.process(:$path, :$params), :$content, |%!default-headers)) but CouchResponse;
+    multi method post(:$path!, :$params, Str :$content, :%form, *%headers) returns CouchResponse {
+        if %form {
+            # Need to force this here
+            my %h = Content-Type => 'application/x-www-form-urlencoded', content-type => 'application/x-www-form-urlencoded';
+            self.request(POST(self.process(:$path, :$params), %form, |%!default-headers, |%headers, |%h)) but CouchResponse;
+        }
+        else {
+            self.request(POST(self.process(:$path, :$params), :$content, |%!default-headers, |%headers)) but CouchResponse;
+        }
     }
 
     multi method post(:$path!, :$params, :%content, *%headers) returns CouchResponse {

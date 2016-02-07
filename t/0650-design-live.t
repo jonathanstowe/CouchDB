@@ -180,6 +180,35 @@ lives-ok { $list-data = $db.get-list($design.name, 'list-names','by-name', somet
 is-deeply $list-data<names>, [@rows.map({$_.value<name> })], "and we got the view data back we expected";
 is $list-data<query><something>, 'other', "and the query parameter we passed in";
 
+my $doc-count = $db.all-docs.elems;
+
+my $update-data;
+lives-ok { $update-data = $db.post-update($design, 'update-request', name => 'seven') }, "simple update with no document";
+is $update-data<what>, 'created', 'got created';
+is $update-data<req><query><name>, 'seven', "and we got the query we sent";
+
+lives-ok { $update-data = $db.post-update($design, 'update-request', $update-data<req><uuid>, name => 'banana') }, "simple update with the document we created";
+is $update-data<what>, 'updated', 'got updated';
+is $update-data<req><query><name>, 'banana', "and we got the query we sent";
+
+lives-ok { $update-data = $db.post-update($design, 'update-request', content => { something => 'else' }, name => 'eight') }, "simple update with no document and content";
+is $update-data<what>, 'created', 'got created';
+is $update-data<req><query><name>, 'eight', "and we got the query we sent";
+is from-json($update-data<req><body>)<something>, 'else', "and the body of the request has what we sent (the body is a string)";
+
+lives-ok { $update-data = $db.post-update($design, 'update-request', form => { something => 'else' }, name => 'nine') }, "simple update with no document and form data";
+is $update-data<what>, 'created', 'got created';
+is $update-data<req><query><name>, 'nine', "and we got the query we sent";
+is $update-data<req><form><something>, 'else', "and the form of the request has what we sent ";
+
+lives-ok { $update-data = $db.post-update($design.name, 'update-request', form => { something => 'else' }, name => 'ten') }, "simple update with no document and form data (with design name)";
+is $update-data<what>, 'created', 'got created';
+is $update-data<req><query><name>, 'ten', "and we got the query we sent";
+is $update-data<req><form><something>, 'else', "and the form of the request has what we sent ";
+
+
+is $db.all-docs.elems, $doc-count + 4, "and we added four documents";
+
 lives-ok { $db.delete }, "delete the database";
 
 done-testing;

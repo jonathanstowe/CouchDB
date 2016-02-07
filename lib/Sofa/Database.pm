@@ -400,6 +400,33 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    proto method post-update(|c) { * }
+
+    multi method post-update(Sofa::Database:D: Str $design-name, |c) {
+        my $design = self.get-design($design-name);
+        samewith($design, |c);
+    }
+
+    multi method post-update(Sofa::Database:D: Sofa::Design:D $design, Str $update-name, Str $doc-id?, :%form!, *%params) {
+        if $design.updates{$update-name}:exists {
+            my @design-parts = flat $design.id-or-name.flat, '_update', $update-name, $doc-id;
+            self!post-document(Str, @design-parts, :no-type, :%form, :%params, what => 'posting update')
+        }
+        else {
+            X::NoDocument.new(name => $update-name, what => "posting update").throw;
+        }
+    }
+
+    multi method post-update(Sofa::Database:D: Sofa::Design:D $design, Str $update-name, Str $doc-id?, :%content, *%params) {
+        if $design.updates{$update-name}:exists {
+            my @design-parts = flat $design.id-or-name.flat, '_update', $update-name, $doc-id;
+            self!post-document(%content, @design-parts, :no-type, params => %params, what => 'posting update')
+        }
+        else {
+            X::NoDocument.new(name => $update-name, what => "posting update").throw;
+        }
+    }
+
     proto method delete-design(|c) { * }
 
     multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc) returns Sofa::Document {
@@ -502,11 +529,25 @@ class Sofa::Database does JSON::Class {
         }
     }
 
-    method !post-document($document, $doc-id, Mu:U :$type = Sofa::Document, :%params, :%headers, :$what = 'creating document') {
+    class X::CantDoBoth is Exception {
+        has $.message = "Can't do both of content and form";
+    }
+
+    method !post-document($document, $doc-id, Mu:U :$type = Sofa::Document, :%form, Bool :$no-type, :%params, :%headers, :$what = 'creating document') {
+        # This shouldn't happen in reality but better catch a mistake
+        if $document.defined && %form {
+            X::CantDoBoth.new.throw;
+        }
+
         my $path = self.get-local-path(path => $doc-id);
-        my $response = self.ua.post(path => $path, :%params, content => $document, |%headers);
+        my $response = do if %form {
+            self.ua.post(path => $path, :%params, :%form, |%headers);
+        }
+        else {
+            self.ua.post(path => $path, :%params, content => $document, |%headers);
+        };
         if $response.is-success {
-            my $doc = $response.from-json($type);
+            my $doc = $no-type ?? $response.from-json !! $response.from-json($type);
             if $document.can('update-rev') && $type ~~ Sofa::Document {
                 $document.update-rev($doc);
             }

@@ -11,7 +11,7 @@
 		 "list-names" : "function(head, req) { var names = { 'names' : [], 'query' : req.query }; while(row = getRow()) { names.names.push(row.value.name) }; send(toJSON(names)); }"
     },
     "updates": {
-       "update-request" : "function(doc, req) { if (!doc) { return [{ '_id' : req.uuid, 'name' : 'ten', 'req' : req } , {'json': {'status' : 'ok'}}] } else { doc.req = req; return [doc, {'json': {'status': 'ok'}}];}}"
+       "update-request" : "function(doc, req) { if (!doc) { return [{ '_id' : req.uuid, 'name' : req.query.name || 'ten', 'req' : req } , {'json': {'status' : 'ok', 'what' : 'created', 'req' : req }}] } else { doc.req = req; return [doc, {'json': {'status': 'ok', 'what' : 'updated', 'req' : req }}];}}"
     },
     "shows": {
 	 	 "echo-request": "function(doc, req) { return { 'json' : req } }",
