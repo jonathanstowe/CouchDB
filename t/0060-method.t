@@ -56,7 +56,7 @@ isa-ok $ret[1], Baz, "and so did the type";
 
 lives-ok { $ret = $f.zub }, "run the method (zub)";
 is $ret[0], '_zubber', "and the path get passed correctly";
-isa-ok $ret[1], ::('Zub'), "and so did the type";
+isa-ok $ret[1], (require ::('Zub')), "and so did the type";
 
 lives-ok { $ret = $f.statistics }, "run the method (statistics)";
 is $ret[0], '_stats', "and the path get passed correctly";
