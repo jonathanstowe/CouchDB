@@ -15,7 +15,8 @@
         "HTTP::UserAgent",
         "JSON::Class",
         "URI",
-        "URI::Template"
+        "URI::Template",
+        "Oyatul"
     ],
     "provides": {
         "Sofa": "lib/Sofa.pm",
