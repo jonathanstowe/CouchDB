@@ -59,6 +59,9 @@ class Sofa::UserAgent is HTTP::UserAgent {
 
     proto method put(|c) { * }
 
+    multi method put(:$path!, :$params, Blob :$content!, *%headers) returns CouchResponse {
+        self.request(PUT(self.process(:$path, :$params), :$content, |%!default-headers, |%headers)) but CouchResponse;
+    }
     multi method put(:$path!, :$params, Str :$content, *%headers) returns CouchResponse {
         self.request(PUT(self.process(:$path, :$params), :$content, |%!default-headers, |%headers)) but CouchResponse;
     }
