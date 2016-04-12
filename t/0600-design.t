@@ -22,7 +22,7 @@ isa-ok $design, Sofa::Design, "and it's a Sofa::Design";
 ok all($design.views.values) ~~ Sofa::Design::View, "and all the views are the right object";
 ok $design.views<by_name> ~~ Sofa::Design::View, "and it's the right sort of hash";
 ok all($design.attachments.values) ~~ Sofa::Document::Attachment, "and got the attribute object";
-is $design.attachments<index.html>.content_type, "text/html", "and one we know is there is right";
+is $design.attachments<index.html>.content-type, "text/html", "and one we know is there is right";
 is $design.name, "contacts", "and we made the name right";
 
 
