@@ -12,15 +12,15 @@ class Sofa::Database does JSON::Class {
         DateTime.new(($val.Numeric/1000000).Int);
     }
 
-    has Int         $.doc_del_count;
-    has Int         $.disk_format_version;
-    has Int         $.committed_update_seq;
-    has Int         $.purge_seq;
-    has Int         $.doc_count;
-    has Bool        $.compact_running;
-    has Int         $.disk_size;
-    has Int         $.data_size;
-    has DateTime    $.instance_start_time is unmarshalled-by(&microsecs-to-dt);
+    has Int         $.document-delete-count         is json-name('doc_del_count');
+    has Int         $.disk-format-version           is json-name('disk_format_version');
+    has Int         $.committed-update-seq          is json-name('commited_update_seq');
+    has Int         $.purge-seq                     is json-name('purge_seq');
+    has Int         $.doc-count                     is json-name('doc_count');
+    has Bool        $.compact-running               is json-name('compact_running');
+    has Int         $.disk-size                     is json-name('disk_size');
+    has Int         $.data-size                     is json-name('data_size');
+    has DateTime    $.instance-start-time           is json-name('instance_start_time') is unmarshalled-by(&microsecs-to-dt);
     has Int         $.update_seq;
     has Str         $.name                is json-name('db_name');
 
