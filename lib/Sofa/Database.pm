@@ -299,6 +299,21 @@ class Sofa::Database does JSON::Class {
         self.add-document-attachment($design.sofa_document_id, $design.sofa_document_revision, $attachment-name, $content-type, $content);
     }
 
+    proto method get-design-attachment(|c) { * }
+
+    multi method get-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) {
+        self.get-document-attachment($doc, $attachment-name);
+    }
+
+    multi method get-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name) {
+        self.get-document-attachment($design.sofa_document_id, $attachment-name);
+    }
+
+    multi method get-design-attachment(Sofa::Database:D: Str $design-name, Str $attachment-name) {
+        my $design = self.get-design($design-name);
+        samewith($design, $attachment-name);
+    }
+
     proto method delete-design-attachment(|c) { * }
 
     multi method delete-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) returns Sofa::Document {

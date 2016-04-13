@@ -121,6 +121,25 @@ ok $design.attachments<sofa.jpg>:exists, "and we have the one we expected";
 is $design.attachments.<sofa.jpg>.content-type, 'image/jpeg', "correct content-type";
 is $design.attachments<sofa.jpg>.length, $file.path.s, "and the length we expected too";
 
+$att-resp = Blob;
+
+lives-ok { $att-resp = $db.get-design-attachment($att, 'sofa.jpg') }, "get-design-attachment with Sofa::Document";
+is $att-resp.elems, $design.attachments<sofa.jpg>.length, "got the size we expected";
+is-deeply $att-resp.list, $data.list, "and got back what we expected";
+
+
+$att-resp = Blob;
+
+lives-ok { $att-resp = $db.get-design-attachment($design, 'sofa.jpg') }, "get-design-attachment with Sofa::Design";
+is $att-resp.elems, $design.attachments<sofa.jpg>.length, "got the size we expected";
+is-deeply $att-resp.list, $data.list, "and got back what we expected";
+
+$att-resp = Blob;
+
+lives-ok { $att-resp = $db.get-design-attachment($design.name, 'sofa.jpg') }, "get-design-attachment with design name";
+is $att-resp.elems, $design.attachments<sofa.jpg>.length, "got the size we expected";
+is-deeply $att-resp.list, $data.list, "and got back what we expected";
+
 lives-ok { $db.delete-design-attachment($att, 'sofa.jpg') }, "delete-design-attachment with Design";
 lives-ok {$design = $db.get-design('contacts') }, "get design back";
 is $design.attachments.keys.elems, 0, "and there is now no attachment on the design";
