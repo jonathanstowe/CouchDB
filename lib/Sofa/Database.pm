@@ -470,6 +470,29 @@ class Sofa::Database does JSON::Class {
         self!put-document($document, $document.sofa_document_id, $document.sofa_document_revision);
     }
 
+    proto method add-document-attachment(|c) { * }
+
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, Blob $content) returns Sofa::Document {
+        samewith($doc.id, $doc.rev, $attachment-name, $content-type, $content);
+    }
+
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Blob $content) returns Sofa::Document {
+        my %headers = Content-Type => $content-type;
+        self!put-document($content, [$doc-id, $attachment-name ], $doc-rev, :%headers, what => 'adding attachment');
+    }
+
+    proto method get-document-attachment(|c) { * }
+
+    multi method get-document-attachment(Sofa::Database:D: Str $doc-id, Str $attachment-name) {
+        my %headers = Accept => '*/*';
+        self!get-document([$doc-id, $attachment-name], :%headers, what => 'retrieving attachment');
+    }
+
+    multi method get-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) {
+        samewith($doc.id, $attachment-name);
+    }
+
+
 
     proto method delete-document(|c) { * }
 
