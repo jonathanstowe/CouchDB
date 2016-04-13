@@ -476,6 +476,33 @@ class Sofa::Database does JSON::Class {
         samewith($doc.id, $doc.rev, $attachment-name, $content-type, $content);
     }
 
+
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, Str $file) returns Sofa::Document {
+        samewith($doc.id, $doc.rev, $attachment-name, $content-type, $file);
+    }
+
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Str $file) returns Sofa::Document {
+        samewith($doc-id, $doc-rev, $attachment-name, $content-type, $file.IO);
+    }
+
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, IO::Path $file) returns Sofa::Document {
+        samewith($doc.id, $doc.rev, $attachment-name, $content-type, $file);
+    }
+
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, IO::Path $file) returns Sofa::Document {
+        my $handle = $file.open(:r, :bin);
+        samewith($doc-id, $doc-rev, $attachment-name, $content-type, $handle);
+    }
+
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, IO::Handle $file) returns Sofa::Document {
+        samewith($doc.id, $doc.rev, $attachment-name, $content-type, $file);
+    }
+
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, IO::Handle $file) returns Sofa::Document {
+        my $content = $file.slurp-rest(:bin);
+        samewith($doc-id, $doc-rev, $attachment-name, $content-type, $content);
+    }
+
     multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Blob $content) returns Sofa::Document {
         my %headers = Content-Type => $content-type;
         self!put-document($content, [$doc-id, $attachment-name ], $doc-rev, :%headers, what => 'adding attachment');
@@ -495,7 +522,7 @@ class Sofa::Database does JSON::Class {
     proto method delete-document-attachment(|c) { * }
 
     multi method delete-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name) {
-        self!delete-document([$doc-id, $attachment-name], $doc-rev);
+        self!delete-document([$doc-id, $attachment-name], $doc-rev, what => 'deleting attachment');
     }
 
     multi method delete-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) {
