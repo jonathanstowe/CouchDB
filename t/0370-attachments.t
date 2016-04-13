@@ -35,7 +35,6 @@ my %doc = ( foo => 1, bar => "baz" );
 ok my $doc = $db.create-document(%doc), "create a document";
 
 my $file = $data-dir.child('sofa.jpg').open(:bin);
-
 my $data = $file.slurp-rest(:bin);
 
 my $att;
@@ -88,6 +87,29 @@ is-deeply $att-resp.list, $data.list, "and got back what we expected";
 lives-ok { $db.delete-document-attachment($att, 'sofa.jpg') }, "delete attachment";
 lives-ok {$new-doc = $db.get-document($doc) }, "get document back";
 is $new-doc<_attachments>.keys.elems, 0, "and there is now no attachment";
+
+# Test for design attachments
+
+lives-ok { $doc = $db.put-design(Sofa::Design.new(name => 'contacts')) }, "put-design with name in object";
+is $doc.id, '_design/contacts', "and the id was populated properly";
+
+
+$file = $data-dir.child('sofa.jpg').open(:bin);
+$data = $file.slurp-rest(:bin);
+
+lives-ok { $att = $db.add-design-attachment($doc, 'sofa.jpg', 'image/jpeg', $data) }, "add-design-attachment with Document and Blob";
+
+my $design;
+lives-ok {$design = $db.get-design('contacts') }, "get design back";
+is $design.sofa_document_revision, $att.rev, "and it has the right rev";
+is $design.attachments.keys.elems, 1, "and there is an attachment";
+ok $design.attachments<sofa.jpg>:exists, "and we have the one we expected";
+is $design.attachments.<sofa.jpg>.content-type, 'image/jpeg', "correct content-type";
+is $design.attachments<sofa.jpg>.length, $file.path.s, "and the length we expected too";
+
+lives-ok { $db.delete-design-attachment($att, 'sofa.jpg') }, "delete-design-attachment with Document";
+lives-ok {$design = $db.get-design('contacts') }, "get design back";
+is $design.attachments.keys.elems, 0, "and there is now no attachment on the design";
 
 END {
     if $db.defined {

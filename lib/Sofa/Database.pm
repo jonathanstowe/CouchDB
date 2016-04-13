@@ -289,6 +289,18 @@ class Sofa::Database does JSON::Class {
         self!get-document(design-id($doc-id), type => Sofa::Design, what => 'getting design');
     }
 
+    proto method add-design-attachment(|c) { * }
+    
+    multi method add-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, |c) returns Sofa::Document {
+        self.add-document-attachment($doc, |c);
+    }
+
+    proto method delete-design-attachment(|c) { * }
+
+    multi method delete-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, |c) returns Sofa::Document {
+        self.delete-document-attachment($doc, |c);
+    }
+
     class ViewResponse does JSON::Class {
         class Row {
             has Str $.id;
