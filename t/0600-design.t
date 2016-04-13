@@ -15,7 +15,7 @@ lives-ok { $design = Sofa::Design.new(name => "foo") }, "create a new Sofa::Desi
 my $d2;
 
 lives-ok { $d2 = Sofa::Design.from-json($design.to-json) }, "round-trip it";
-is $d2.sofa_document_id, '_design/foo', "and the id was populated";
+is $d2.sofa-document-id, '_design/foo', "and the id was populated";
 
 lives-ok { $design = Sofa::Design.from-json($data-dir.child('design-contacts.json').slurp) }, "create one from an existing file";
 isa-ok $design, Sofa::Design, "and it's a Sofa::Design";

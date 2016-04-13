@@ -7,9 +7,9 @@ use Sofa::Document::Attachment;
 role Sofa::Document::Wrapper {
     use JSON::Class;
 
-    has Str                        $.sofa_document_type = _get_doc_name();
-    has Str                        $.sofa_document_id       is json-name('_id')  is json-skip-null;
-    has Str                        $.sofa_document_revision is json-name('_rev') is json-skip-null;
+    has Str                        $.sofa-document-type = _get_doc_name();
+    has Str                        $.sofa-document-id       is json-name('_id')  is json-skip-null;
+    has Str                        $.sofa-document-revision is json-name('_rev') is json-skip-null;
     has Sofa::Document::Attachment %.attachments            is json-name('_attachments');
 
     sub _get_doc_name() {
@@ -18,16 +18,16 @@ role Sofa::Document::Wrapper {
     } 
     method to-json() {
         self does JSON::Class;
-        if not $!sofa_document_type {
-            $!sofa_document_type = _get_doc_name();
+        if not $!sofa-document-type {
+            $!sofa-document-type = _get_doc_name();
         }
         self.JSON::Class::to-json();
     }
 
     method update-rev(Sofa::Document:D $doc) {
-        if !$!sofa_document_id.defined || ($doc.id eq $!sofa_document_id ) {
-            $!sofa_document_id = $doc.id;
-            $!sofa_document_revision = $doc.rev;
+        if !$!sofa-document-id.defined || ($doc.id eq $!sofa-document-id ) {
+            $!sofa-document-id = $doc.id;
+            $!sofa-document-revision = $doc.rev;
         }
     }
 }

@@ -36,8 +36,8 @@ lives-ok { $db = $sofa.create-database($name) }, "create-database('$name')";
 my $test-obj = TestClass.new(foo => "toot", bar => 42);
 ok my $doc = $db.create-document($test-obj), "create a document";
 
-is $test-obj.sofa_document_revision, $doc.rev, "got updated with the document revision";
-is $test-obj.sofa_document_id, $doc.id, "and updated with the document id";
+is $test-obj.sofa-document-revision, $doc.rev, "got updated with the document revision";
+is $test-obj.sofa-document-id, $doc.id, "and updated with the document id";
 
 isa-ok $doc, Sofa::Document, "and got back a Sofa::Document";
 
@@ -54,9 +54,9 @@ ok my $new-doc = $db.get-document($doc, TestClass), "get-document (with doc)";
 
 is $new-doc.foo, "toot", "got back the foo we sent";
 is $new-doc.bar, 42,"and got back the bar we sent";
-is $new-doc.sofa_document_id, $doc.id, "and the id we expected";
-is $new-doc.sofa_document_revision, $doc.rev, "and the rev we expected";
-is $new-doc.sofa_document_type, 'testclass', "and the 'document type'";
+is $new-doc.sofa-document-id, $doc.id, "and the id we expected";
+is $new-doc.sofa-document-revision, $doc.rev, "and the rev we expected";
+is $new-doc.sofa-document-type, 'testclass', "and the 'document type'";
 
 $new-doc.foo = "change-this";
 $new-doc.bar = 78;
@@ -64,14 +64,14 @@ $new-doc.bar = 78;
 my $updated-doc;
 lives-ok { $updated-doc = $db.update-document($new-doc) }, "update-document with an object";
 
-is $new-doc.sofa_document_revision, $updated-doc.rev, "and we got the updated revision";
+is $new-doc.sofa-document-revision, $updated-doc.rev, "and we got the updated revision";
 ok my $new-new-doc = $db.get-document($doc, TestClass), "get-document (with doc)";
 
 is $new-new-doc.foo, $new-doc.foo, "got back the foo we sent";
 is $new-new-doc.bar, $new-doc.bar,"and got back the bar we sent";
-is $new-new-doc.sofa_document_id, $new-doc.sofa_document_id, "and the id we expected";
-is $new-new-doc.sofa_document_revision, $new-doc.sofa_document_revision, "and the rev we expected";
-is $new-new-doc.sofa_document_type, 'testclass', "and the 'document type'";
+is $new-new-doc.sofa-document-id, $new-doc.sofa-document-id, "and the id we expected";
+is $new-new-doc.sofa-document-revision, $new-doc.sofa-document-revision, "and the rev we expected";
+is $new-new-doc.sofa-document-type, 'testclass', "and the 'document type'";
 
 lives-ok { $db.delete-document($new-new-doc) }, "delete document with object";
 

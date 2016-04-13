@@ -28,24 +28,24 @@ class Sofa::Design does JSON::Class does Sofa::Document::Wrapper {
     has Str  $.validate-doc-update  is json-name('validate_doc_update') is json-skip-null;
 
     method to-json() {
-        if !$!sofa_document_id.defined  && $!name.defined {
-            $!sofa_document_id = '_design/' ~ $!name;
+        if !$!sofa-document-id.defined  && $!name.defined {
+            $!sofa-document-id = '_design/' ~ $!name;
         }
-        elsif $!sofa_document_id.defined && !$!name.defined {
-            $!name = $!sofa_document_id.split('/')[1];
+        elsif $!sofa-document-id.defined && !$!name.defined {
+            $!name = $!sofa-document-id.split('/')[1];
         }
         self.Sofa::Document::Wrapper::to-json();
     }
 
     method name() {
-        if !$!name.defined && $!sofa_document_id.defined {
-            $!name = $!sofa_document_id.split('/')[1];
+        if !$!name.defined && $!sofa-document-id.defined {
+            $!name = $!sofa-document-id.split('/')[1];
         }
         $!name;
     }
 
     method id-or-name() {
-        $!sofa_document_id ?? $!sofa_document_id.split('/') !! ['_design', $!name ];
+        $!sofa-document-id ?? $!sofa-document-id.split('/') !! ['_design', $!name ];
     }
 }
 

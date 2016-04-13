@@ -101,7 +101,7 @@ lives-ok { $att = $db.add-design-attachment($doc, 'sofa.jpg', 'image/jpeg', $dat
 
 my $design;
 lives-ok {$design = $db.get-design('contacts') }, "get design back";
-is $design.sofa_document_revision, $att.rev, "and it has the right rev";
+is $design.sofa-document-revision, $att.rev, "and it has the right rev";
 is $design.attachments.keys.elems, 1, "and there is an attachment";
 ok $design.attachments<sofa.jpg>:exists, "and we have the one we expected";
 is $design.attachments.<sofa.jpg>.content-type, 'image/jpeg', "correct content-type";
@@ -115,7 +115,7 @@ is $design.attachments.keys.elems, 0, "and there is now no attachment on the des
 lives-ok { $att = $db.add-design-attachment($design, 'sofa.jpg', 'image/jpeg', $data) }, "add-design-attachment with Design and Blob";
 
 lives-ok {$design = $db.get-design('contacts') }, "get design back";
-is $design.sofa_document_revision, $att.rev, "and it has the right rev";
+is $design.sofa-document-revision, $att.rev, "and it has the right rev";
 is $design.attachments.keys.elems, 1, "and there is an attachment";
 ok $design.attachments<sofa.jpg>:exists, "and we have the one we expected";
 is $design.attachments.<sofa.jpg>.content-type, 'image/jpeg', "correct content-type";

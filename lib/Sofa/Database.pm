@@ -260,17 +260,17 @@ class Sofa::Database does JSON::Class {
     }
 
     
-    subset NamedDesign  of Sofa::Design where  { $_.defined && ( $_.name.defined || $_.sofa_document_id.defined ) };
-    subset NoNameDesign of Sofa::Design where  { $_.defined && ( !$_.name.defined and !$_.sofa_document_id.defined ) };
+    subset NamedDesign  of Sofa::Design where  { $_.defined && ( $_.name.defined || $_.sofa-document-id.defined ) };
+    subset NoNameDesign of Sofa::Design where  { $_.defined && ( !$_.name.defined and !$_.sofa-document-id.defined ) };
 
     proto method put-design(|c) { * }
 
     multi method put-design(Sofa::Database:D: NamedDesign $doc ) returns Sofa::Document {
-        self!put-document($doc, $doc.id-or-name, $doc.sofa_document_revision, what => 'putting design document'); 
+        self!put-document($doc, $doc.id-or-name, $doc.sofa-document-revision, what => 'putting design document'); 
     }
 
     multi method put-design(Sofa::Database:D: NoNameDesign $doc, Str:D $doc-id ) returns Sofa::Document {
-        self!put-document($doc, design-id($doc-id), $doc.sofa_document_revision, what => 'putting design document'); 
+        self!put-document($doc, design-id($doc-id), $doc.sofa-document-revision, what => 'putting design document'); 
     }
 
     # Because we might not dealing with one we created ourself $!name can't be required
@@ -296,7 +296,7 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method add-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name, Str $content-type, $content ) returns Sofa::Document {
-        self.add-document-attachment($design.sofa_document_id, $design.sofa_document_revision, $attachment-name, $content-type, $content);
+        self.add-document-attachment($design.sofa-document-id, $design.sofa-document-revision, $attachment-name, $content-type, $content);
     }
 
     proto method get-design-attachment(|c) { * }
@@ -306,7 +306,7 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method get-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name) {
-        self.get-document-attachment($design.sofa_document_id, $attachment-name);
+        self.get-document-attachment($design.sofa-document-id, $attachment-name);
     }
 
     multi method get-design-attachment(Sofa::Database:D: Str $design-name, Str $attachment-name) {
@@ -321,7 +321,7 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method delete-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name) returns Sofa::Document {
-        self.delete-document-attachment($design.sofa_document_id, $design.sofa_document_revision, $attachment-name);
+        self.delete-document-attachment($design.sofa-document-id, $design.sofa-document-revision, $attachment-name);
     }
 
     class ViewResponse does JSON::Class {
@@ -468,7 +468,7 @@ class Sofa::Database does JSON::Class {
         self!delete-document(design-id($doc.id), $doc.rev, what => 'deleting design');
     }
     multi method delete-design(Sofa::Database:D: Sofa::Design:D $doc ) returns Sofa::Document {
-        self!delete-document($doc.id-or-name, $doc.sofa_document_revision, what => 'deleting design');
+        self!delete-document($doc.id-or-name, $doc.sofa-document-revision, what => 'deleting design');
     }
 
 
@@ -502,7 +502,7 @@ class Sofa::Database does JSON::Class {
     }
 
     multi method update-document(Sofa::Database:D: Sofa::Document::Wrapper $document) returns Sofa::Document {
-        self!put-document($document, $document.sofa_document_id, $document.sofa_document_revision);
+        self!put-document($document, $document.sofa-document-id, $document.sofa-document-revision);
     }
 
     proto method add-document-attachment(|c) { * }
@@ -569,7 +569,7 @@ class Sofa::Database does JSON::Class {
     proto method delete-document(|c) { * }
 
     multi method delete-document(Sofa::Database:D: Sofa::Document::Wrapper:D $doc) returns Sofa::Document {
-        samewith($doc.sofa_document_id, $doc.sofa_document_revision);
+        samewith($doc.sofa-document-id, $doc.sofa-document-revision);
     }
 
     multi method delete-document(Sofa::Database:D: Sofa::Document:D $doc ) returns Sofa::Document {

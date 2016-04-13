@@ -39,9 +39,9 @@ is $doc.id, '_design/contacts', "and the id was populated properly";
 my $design;
 lives-ok { $design = $db.get-design('contacts') }, "get the new design document";
 isa-ok $design, Sofa::Design, "and we got one back";
-is $design.sofa_document_id, $doc.id, "and it has the right id";
+is $design.sofa-document-id, $doc.id, "and it has the right id";
 is $design.name, "contacts", "got the right name";
-is $design.sofa_document_revision, $doc.rev, "got the right revision";
+is $design.sofa-document-revision, $doc.rev, "got the right revision";
 lives-ok { $db.delete-design($design) }, "delete that one";
 throws-like { $db.get-design('contacts') }, X::NoDocument, "get-design throws again as it doesn't exist";
 
@@ -49,9 +49,9 @@ lives-ok { $doc = $db.put-design(Sofa::Design.new(),'contacts') }, "put-design w
 is $doc.id, '_design/contacts', "and the id was populated properly";
 lives-ok { $design = $db.get-design('contacts'); }, "get the new design document";
 isa-ok $design, Sofa::Design, "and we got one back";
-is $design.sofa_document_id, $doc.id, "and it has the right id";
+is $design.sofa-document-id, $doc.id, "and it has the right id";
 is $design.name, "contacts", "got the right name";
-is $design.sofa_document_revision, $doc.rev, "got the right revision";
+is $design.sofa-document-revision, $doc.rev, "got the right revision";
 lives-ok { $db.delete-design($doc) }, "delete that one (use the Sofa::Document)";
 throws-like { $db.get-design('contacts') }, X::NoDocument, "get-design throws again as it doesn't exist";
 
@@ -149,22 +149,22 @@ is $show-data<query><foo>, "bar", "got back the param we sent";
 is $show-data<query><baz>, "Boom", "got back the other param we sent";
 nok $show-data<id>.defined, "and the id isn't defined because we didn't ask for a document";
 
-lives-ok { $show-data = $db.get-show($design, 'echo-request', @objects[1].sofa_document_id, foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on";
+lives-ok { $show-data = $db.get-show($design, 'echo-request', @objects[1].sofa-document-id, foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on";
 is $show-data<query><foo>, "bar", "got back the param we sent";
 is $show-data<query><baz>, "Boom", "got back the other param we sent";
 ok $show-data<id>.defined, "and the id is defined because we did ask for a document";
-is $show-data<id>, @objects[1].sofa_document_id, "and got back the document id";
+is $show-data<id>, @objects[1].sofa-document-id, "and got back the document id";
 
 lives-ok { $show-data = $db.get-show($design.name, 'echo-request', foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on with no document specified with named design";
 is $show-data<query><foo>, "bar", "got back the param we sent";
 is $show-data<query><baz>, "Boom", "got back the other param we sent";
 nok $show-data<id>.defined, "and the id isn't defined because we didn't ask for a document";
 
-lives-ok { $show-data = $db.get-show($design.name, 'echo-request', @objects[1].sofa_document_id, foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on with named design";
+lives-ok { $show-data = $db.get-show($design.name, 'echo-request', @objects[1].sofa-document-id, foo => "bar", baz => "Boom"); }, "get-show() returning JSON with some query parameters to pass on with named design";
 is $show-data<query><foo>, "bar", "got back the param we sent";
 is $show-data<query><baz>, "Boom", "got back the other param we sent";
 ok $show-data<id>.defined, "and the id is defined because we did ask for a document";
-is $show-data<id>, @objects[1].sofa_document_id, "and got back the document id";
+is $show-data<id>, @objects[1].sofa-document-id, "and got back the document id";
 
 lives-ok { $show-data = $db.get-show($design, 'html-response'); }, "get-show with non-json data";
 like $show-data, /'Hello, World'/, "and it looks like we got what we expected";
