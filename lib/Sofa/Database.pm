@@ -291,14 +291,22 @@ class Sofa::Database does JSON::Class {
 
     proto method add-design-attachment(|c) { * }
     
-    multi method add-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, |c) returns Sofa::Document {
-        self.add-document-attachment($doc, |c);
+    multi method add-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, $content ) returns Sofa::Document {
+        self.add-document-attachment($doc, $attachment-name, $content-type, $content);
+    }
+
+    multi method add-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name, Str $content-type, $content ) returns Sofa::Document {
+        self.add-document-attachment($design.sofa_document_id, $design.sofa_document_revision, $attachment-name, $content-type, $content);
     }
 
     proto method delete-design-attachment(|c) { * }
 
-    multi method delete-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, |c) returns Sofa::Document {
-        self.delete-document-attachment($doc, |c);
+    multi method delete-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) returns Sofa::Document {
+        self.delete-document-attachment($doc, $attachment-name);
+    }
+
+    multi method delete-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name) returns Sofa::Document {
+        self.delete-document-attachment($design.sofa_document_id, $design.sofa_document_revision, $attachment-name);
     }
 
     class ViewResponse does JSON::Class {
