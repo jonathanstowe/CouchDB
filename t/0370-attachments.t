@@ -57,6 +57,11 @@ lives-ok { $att-resp = $db.get-document-attachment($doc, 'sofa.jpg') }, "get-doc
 is $att-resp.elems, $new-doc<_attachments><sofa.jpg><length>, "got the size we expected";
 is-deeply $att-resp.list, $data.list, "and got back what we expected";
 
+lives-ok { $db.delete-document-attachment($att, 'sofa.jpg') }, "delete attachment";
+
+lives-ok {$new-doc = $db.get-document($doc) }, "get document back";
+is $new-doc<_attachments>.keys.elems, 0, "and there is now no attachment";
+
 
 
 

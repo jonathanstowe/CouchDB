@@ -492,6 +492,16 @@ class Sofa::Database does JSON::Class {
         samewith($doc.id, $attachment-name);
     }
 
+    proto method delete-document-attachment(|c) { * }
+
+    multi method delete-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name) {
+        self!delete-document([$doc-id, $attachment-name], $doc-rev);
+    }
+
+    multi method delete-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) {
+        samewith($doc.id, $doc.rev, $attachment-name);
+    }
+
 
 
     proto method delete-document(|c) { * }
