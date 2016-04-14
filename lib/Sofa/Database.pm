@@ -1,4 +1,5 @@
 use JSON::Name;
+use Sofa::Method;
 
 use JSON::Class:ver(v0.0.5..*);
 use Sofa::UserAgent;
@@ -226,6 +227,7 @@ class Sofa::Database does JSON::Class {
         }
     }
 
+    method security() is sofa-item('Sofa::Database::Security') { * };
 
     proto method create-document(|c) { * }
 
