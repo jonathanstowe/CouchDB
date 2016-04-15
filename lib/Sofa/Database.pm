@@ -8,6 +8,7 @@ class Sofa::Database does JSON::Class {
     use Sofa::Document;
     use Sofa::Document::Wrapper;
     use Sofa::Design;
+    use Sofa::Database::Security;
 
     sub microsecs-to-dt($val) returns DateTime {
         DateTime.new(($val.Numeric/1000000).Int);
@@ -228,6 +229,10 @@ class Sofa::Database does JSON::Class {
     }
 
     method security() is sofa-item('Sofa::Database::Security') { * };
+
+    method update-security(Sofa::Database::Security $sec) {
+        self!put-document($sec, '_security', what => 'updating security');
+    }
 
     proto method create-document(|c) { * }
 
