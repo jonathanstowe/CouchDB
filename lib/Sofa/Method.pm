@@ -19,7 +19,7 @@ module Sofa::Method {
                 $!sofa-item = load-if-required($sofa-item);
                 $!sofa-path = $!sofa-item.HOW.sofa-path;
                 if $self.can('get-local-path') {
-                    $!sofa-path = $self.get-local-path(parts => $!sofa-path);
+                    $!sofa-path = $self.get-local-path(path => $!sofa-path);
                 }
             }
             my $response = $self.ua.get(path => $!sofa-path);
