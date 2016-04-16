@@ -47,7 +47,7 @@ ok $doc.rev, "There is a rev";
 
 is $db.all-docs.elems, 1, "and now there should be a new row";
 
-is $db.all-docs[0]<id>, $doc.id, "and the id is there in the all-docs";
+is $db.all-docs[0].id, $doc.id, "and the id is there in the all-docs";
 
 
 ok my $new-doc = $db.get-document($doc, TestClass), "get-document (with doc)";
