@@ -47,13 +47,16 @@ ok $doc.rev, "There is a rev";
 
 my @all-docs;
 
-#lives-ok { 
-    @all-docs = $db.all-docs(:detail);
-#}, "get all-docs with type";
+lives-ok { 
+    @all-docs = $db.all-docs(:detail, type => TestClass);
+}, "get all-docs with type";
 
 is @all-docs.elems, 1, "and now there should be a new row";
 
 is @all-docs[0].id, $doc.id, "and the id is there in the all-docs";
+isa-ok @all-docs[0].doc, TestClass, "and the doc is the right type";
+is @all-docs[0].doc.foo, $test-obj.foo, "got the expected attribute";
+is @all-docs[0].doc.bar, $test-obj.bar, "got the other expected attribute";
 
 
 ok my $new-doc = $db.get-document($doc, TestClass), "get-document (with doc)";

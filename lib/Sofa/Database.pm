@@ -170,7 +170,9 @@ class Sofa::Database does JSON::Class {
         my $response = self.ua.get(path => $path, params => %params);
         if $response.is-success {
             my $wrapped-type = $type ~~ Sofa::Document::Wrapper ?? $type !! $type but Sofa::Document::Wrapper;
-            $response.from-json(Sofa::Document::All[$wrapped-type].new.WHAT).rows;
+            my $d := (class {} but Sofa::Document::All::Row.^parameterize($wrapped-type));
+            my $c := (class {} but Sofa::Document::All.^parameterize($d));
+            $response.from-json($c).rows;
         }
         else {
             self!get-exception($response.code, $!name, 'getting all docs').throw;
