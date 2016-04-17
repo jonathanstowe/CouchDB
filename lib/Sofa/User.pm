@@ -6,7 +6,7 @@ use Sofa::Document::Wrapper;
 
 class Sofa::User does JSON::Class does Sofa::Document::Wrapper {
     has Str $.name;
-    has Str $.password          is json-skip-null;
+    has Str $.password          is rw is json-skip-null;
     has Str $.salt              is json-skip-null;
     has Str $.derived-key       is json-name('derived_key') is json-skip-null;
     has Int $.iterations        is json-skip-null;

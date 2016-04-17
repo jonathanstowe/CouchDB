@@ -5,6 +5,7 @@ use Sofa::Method;
 class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
     use Sofa::UserAgent;
     use Sofa::Database;
+    use Sofa::User;
     use JSON::Tiny;
     
 
@@ -56,6 +57,30 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
 
    method get-database(Str $name) returns Sofa::Database {
        @.databases.grep({$_.name eq $name}).first;
+   }
+
+   has Sofa::Database $.user-db;
+   method user-db() returns Sofa::Database {
+       if not $!user-db.defined {
+           $!user-db = self.get-database('_users');
+       }
+       $!user-db;
+   }
+
+   method users() {
+       self.user-db.all-docs(:detail, type => Sofa::User).map(-> $d { $d.doc }).grep({ $_.sofa-document-id !~~ /^_design/});
+   }
+
+   method add-user(Sofa::User:D $user) {
+       self.user-db.create-document($user.generate-id, $user);
+   }
+
+   method update-user(Sofa::User:D $user) {
+       self.user-db.update-document($user);
+   }
+
+   method delete-user(Sofa::User:D $user) {
+       self.user-db.delete-document($user);
    }
 
    method session() handles <is-admin> is sofa-item('Sofa::Session') { * }
