@@ -45,9 +45,15 @@ ok $doc.ok, "ok is true";
 ok $doc.id, "There is a id";
 ok $doc.rev, "There is a rev";
 
-is $db.all-docs.elems, 1, "and now there should be a new row";
+my @all-docs;
 
-is $db.all-docs[0].id, $doc.id, "and the id is there in the all-docs";
+#lives-ok { 
+    @all-docs = $db.all-docs(:detail);
+#}, "get all-docs with type";
+
+is @all-docs.elems, 1, "and now there should be a new row";
+
+is @all-docs[0].id, $doc.id, "and the id is there in the all-docs";
 
 
 ok my $new-doc = $db.get-document($doc, TestClass), "get-document (with doc)";

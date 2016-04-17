@@ -159,7 +159,7 @@ class Sofa::Database does JSON::Class {
     }
 
     constant AllDefault = (Hash but Sofa::Document::Wrapper);
-    multi method all-docs(Sofa::Database:D: :$detail, Mu:U :$type = AllDefault) {
+    multi method all-docs(Sofa::Database:D: :$detail, Mu:U :$type = Sofa::Document::All::Default) {
         my %params;
 
         if $detail {
@@ -170,7 +170,7 @@ class Sofa::Database does JSON::Class {
         my $response = self.ua.get(path => $path, params => %params);
         if $response.is-success {
             my $wrapped-type = $type ~~ Sofa::Document::Wrapper ?? $type !! $type but Sofa::Document::Wrapper;
-            $response.from-json(Sofa::Document::All[$wrapped-type]).rows;
+            $response.from-json(Sofa::Document::All[$wrapped-type].new.WHAT).rows;
         }
         else {
             self!get-exception($response.code, $!name, 'getting all docs').throw;
