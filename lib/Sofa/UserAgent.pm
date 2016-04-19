@@ -5,6 +5,7 @@ use HTTP::Request::Common;
 use HTTP::UserAgent ();
 
 class Sofa::UserAgent is HTTP::UserAgent {
+    use JSON::Fast;
 
     has Str             $.host              = 'localhost';
     has Int             $.port              = 5984;
