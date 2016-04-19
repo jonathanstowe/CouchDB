@@ -2,8 +2,6 @@ use v6;
 
 use JSON::Name;
 use JSON::Class:ver(v0.0.5..*);
-use JSON::Unmarshal;
-use JSON::Marshal;
 
 class Sofa::Server does JSON::Class {
     class Vendor {

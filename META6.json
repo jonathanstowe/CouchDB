@@ -11,9 +11,13 @@
         "CheckSocket"
     ],
     "depends": [
+        "JSON::Fast",
+		  "JSON::Name",
+        "JSON::Marshal",
+        "JSON::Unmarshal",
+        "JSON::Class",
         "MIME::Types",
         "HTTP::UserAgent",
-        "JSON::Class",
         "URI",
         "URI::Template",
         "Oyatul"

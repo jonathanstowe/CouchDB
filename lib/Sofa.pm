@@ -6,7 +6,6 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
     use Sofa::UserAgent;
     use Sofa::Database;
     use Sofa::User;
-    use JSON::Tiny;
     
 
     has Sofa::UserAgent $.ua is rw;
