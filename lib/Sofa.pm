@@ -70,7 +70,14 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
        self.user-db.all-docs(:detail, type => Sofa::User).map(-> $d { $d.doc }).grep({ $_.sofa-document-id !~~ /^_design/});
    }
 
-   method add-user(Sofa::User:D $user) {
+    proto method add-user(|c) { * }
+
+    multi method add-user(Str :$name!, Str :$password, :@roles) returns Sofa::User {
+        my $user = Sofa::User.new(:$name, :$password, :@roles);
+        samewith($user);
+        $user;
+    }
+   multi method add-user(Sofa::User:D $user) {
        self.user-db.create-document($user.generate-id, $user);
    }
 

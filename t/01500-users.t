@@ -40,6 +40,18 @@ if $sofa.is-admin {
     lives-ok { $sofa.delete-user($user) }, "delete the user";
     lives-ok { @users = $sofa.users }, "get the users";
     is @users.elems, $u-count, "got one less user";
+
+    lives-ok { $user = $sofa.add-user(name => get-username(), password => 'zubzubzub'); }, "add-user with arguments";
+    $rev = $user.sofa-document-revision;
+    ok $rev.defined, "got the revision";
+    lives-ok { @users = $sofa.users }, "get the users";
+    is @users.elems, $u-count + 1, "got one more user";
+    $user.password = "newpassword";
+    lives-ok { $sofa.update-user($user) }, "update the passsword";
+    isnt $user.sofa-document-revision, $rev, "and the revision got updated";
+    lives-ok { $sofa.delete-user($user) }, "delete the user";
+    lives-ok { @users = $sofa.users }, "get the users";
+    is @users.elems, $u-count, "got one less user";
 }
 else {
     skip "Need to be admin to test users";
