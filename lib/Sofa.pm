@@ -13,11 +13,21 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
     has Str  $.host is rw = 'localhost';
     has Bool $.secure = False;
 
+    has Str $.username;
+    has Str $.password;
+
+    has Bool $.basic-auth;
+
     has Sofa::Database @.databases;
 
     method ua() returns Sofa::UserAgent is rw {
         if not $!ua.defined {
             $!ua = Sofa::UserAgent.new(host => $!host, port => $!port, secure => $!secure);
+            if $!username.defined && $!password.defined {
+                if $!basic-auth {
+                    $!ua.auth($!username, $!password);
+                }
+            }
         }
         $!ua;
     }
