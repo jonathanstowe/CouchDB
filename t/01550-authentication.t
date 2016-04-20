@@ -44,6 +44,14 @@ if $sofa.is-admin {
 
     throws-like { $session = $auth-client.session() }, X::NotAuthorised, "get session for a non-existent user";
 
+    lives-ok { $sofa.add-user(name => $username, :$password) }, "create a new user";
+
+    lives-ok { $session = $auth-client.session() }, "get session for now existent user";
+    ok $session.is-authenticated, "and the session is authenticated";
+
+    LEAVE {
+        try $sofa.delete-user($username);
+    }
 }
 else {
     skip "not admin can't do the tests";
