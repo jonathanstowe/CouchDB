@@ -35,7 +35,7 @@
         "Sofa::Statistics": "lib/Sofa/Statistics.pm",
         "Sofa::Config": "lib/Sofa/Config.pm",
         "Sofa::Document": "lib/Sofa/Document.pm",
-        "Sofa::X": "lib/Sofa/X.pm"
+        "Sofa::Exception": "lib/Sofa/Exception.pm"
     },
     "support": {
         "source": "git://github.com/jonathanstowe/Sofa.git"
