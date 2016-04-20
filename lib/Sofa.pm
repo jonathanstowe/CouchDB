@@ -40,35 +40,35 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
             }
         }
         @!databases;
-   }
+    }
 
-   method create-database(Str $name) {
-       my $db;
-       if not @.databases.grep({ $_.name eq $name } ) {
-           $db = Sofa::Database.create(:$name, ua => self.ua);
-           @.databases.push: $db;
-       }
-       else {
-           X::DatabaseExists.new(:$name).throw;
-       }
-       $db;
-   }
+    method create-database(Str $name) {
+        my $db;
+        if not @.databases.grep({ $_.name eq $name } ) {
+            $db = Sofa::Database.create(:$name, ua => self.ua);
+            @.databases.push: $db;
+        }
+        else {
+            X::DatabaseExists.new(:$name).throw;
+        }
+        $db;
+    }
 
-   method get-database(Str $name) returns Sofa::Database {
-       @.databases.grep({$_.name eq $name}).first;
-   }
+    method get-database(Str $name) returns Sofa::Database {
+        @.databases.grep({$_.name eq $name}).first;
+    }
 
-   has Sofa::Database $.user-db;
-   method user-db() returns Sofa::Database {
-       if not $!user-db.defined {
-           $!user-db = self.get-database('_users');
-       }
-       $!user-db;
-   }
+    has Sofa::Database $.user-db;
+    method user-db() returns Sofa::Database {
+        if not $!user-db.defined {
+            $!user-db = self.get-database('_users');
+        }
+        $!user-db;
+    }
 
-   method users() {
-       self.user-db.all-docs(:detail, type => Sofa::User).map(-> $d { $d.doc }).grep({ $_.sofa-document-id !~~ /^_design/});
-   }
+    method users() {
+        self.user-db.all-docs(:detail, type => Sofa::User).map(-> $d { $d.doc }).grep({ $_.sofa-document-id !~~ /^_design/});
+    }
 
     proto method add-user(|c) { * }
 
@@ -77,22 +77,35 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
         samewith($user);
         $user;
     }
-   multi method add-user(Sofa::User:D $user) {
-       self.user-db.create-document($user.generate-id, $user);
-   }
 
-   method update-user(Sofa::User:D $user) {
-       self.user-db.update-document($user);
-   }
+    multi method add-user(Sofa::User:D $user) {
+        self.user-db.create-document($user.generate-id, $user);
+    }
 
-   method delete-user(Sofa::User:D $user) {
-       self.user-db.delete-document($user);
-   }
+    method get-user(Str $name) returns Sofa::User {
+        my $id = Sofa::User.generate-id($name);
+        self.user-db.get-document($id, Sofa::User);
+    }
 
-   method session() handles <is-admin> is sofa-item('Sofa::Session') { * }
+    method update-user(Sofa::User:D $user) {
+        self.user-db.update-document($user);
+    }
 
-   method statistics() is sofa-item('Sofa::Statistics') { * }
+    proto method delete-user(|c) { * }
 
-   method configuration() is sofa-item('Sofa::Config') { * }
+    multi method delete-user(Str $name) {
+        my $user = self.get-user($name);
+        samewith($user);
+    }
+
+    multi method delete-user(Sofa::User:D $user) {
+        self.user-db.delete-document($user);
+    }
+
+    method session() handles <is-admin> is sofa-item('Sofa::Session') { * }
+
+    method statistics() is sofa-item('Sofa::Statistics') { * }
+
+    method configuration() is sofa-item('Sofa::Config') { * }
 }
 # vim: expandtab shiftwidth=4 ft=perl6

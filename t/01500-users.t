@@ -49,9 +49,15 @@ if $sofa.is-admin {
     $user.password = "newpassword";
     lives-ok { $sofa.update-user($user) }, "update the passsword";
     isnt $user.sofa-document-revision, $rev, "and the revision got updated";
-    lives-ok { $sofa.delete-user($user) }, "delete the user";
+    my $new-user;
+    lives-ok { $new-user = $sofa.get-user($user.name) }, "get-user";
+    isa-ok $new-user, Sofa::User, "and it is a user";
+    is $new-user.sofa-document-id, $user.sofa-document-id, "id is the same";
+    is $new-user.sofa-document-revision, $user.sofa-document-revision, "and revision right";
+    lives-ok { $sofa.delete-user($user.name) }, "delete the user (with the name)";
     lives-ok { @users = $sofa.users }, "get the users";
     is @users.elems, $u-count, "got one less user";
+
 }
 else {
     skip "Need to be admin to test users";

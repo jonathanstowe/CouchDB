@@ -18,12 +18,22 @@ class Sofa::User does JSON::Class does Sofa::Document::Wrapper {
         self.Sofa::Document::Wrapper::to-json();
     }
 
-    method generate-id() returns Str {
+    sub generate-id(Str $name) returns Str {
+        "org.couchdb.user:%s".sprintf($name);
+    }
+
+    proto method generate-id(|c) { * }
+
+    multi method generate-id() returns Str {
         my Str $s;
         if $!name.defined {
-            $s = "org.couchdb.user:%s".sprintf($!name);
+            $s = generate-id($!name);
         }
         $s;
+    }
+
+    multi method generate-id(Str $name) returns Str {
+        generate-id($name);
     }
 }
 
