@@ -1,8 +1,9 @@
 use v6;
 
 use Sofa::Method;
+use Sofa::Exception;
 
-class Sofa:auth<github:jonathanstowe>:ver<0.0.1> {
+class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
     use Sofa::UserAgent;
     use Sofa::Database;
     use Sofa::User;

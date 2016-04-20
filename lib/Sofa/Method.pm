@@ -2,7 +2,9 @@ use v6.c;
 
 module Sofa::Method {
 
-    role Item[Str:D $sofa-item] {
+    use Sofa::Exception;
+
+    role Item[Str:D $sofa-item] does Sofa::Exception::Handler {
 
         has     $.sofa-path;
         has Mu  $.sofa-item;
@@ -27,8 +29,7 @@ module Sofa::Method {
                 $response.from-json($!sofa-item);
             }
             else {
-                # TODO: DTRT here
-                die $response;
+                $self!get-exception($response.code, $!sofa-path, "getting $sofa-item", Sofa::Exception::Server).throw;
             }
         }
     }
