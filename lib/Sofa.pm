@@ -28,6 +28,13 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
                 if $!basic-auth {
                     $!ua.auth($!username, $!password);
                 }
+                else {
+                    my %form = name => $!username, password => $!password;
+                    my $res = $!ua.post(path => '_session', :%form);
+                    if not $res.is-success {
+                        self!get-exception($res.code, '_session', "getting session", Sofa::Exception::Server).throw;
+                    }
+                }
             }
         }
         $!ua;

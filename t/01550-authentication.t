@@ -34,24 +34,47 @@ lives-ok { $sofa = Sofa.new(:$host, :$port, |%auth) }, "can create an object";
 if $sofa.is-admin {
     pass "got admin";
 
-    my $username =  ('a' .. 'z').pick(8).join('');
-    my $password =  ('a' .. 'z').pick(8).join('');
+    subtest {
+        my $username =  ('a' .. 'z').pick(8).join('');
+        my $password =  ('a' .. 'z').pick(8).join('');
 
-    my $auth-client;
+        my $auth-client;
 
-    lives-ok { $auth-client = Sofa.new(:$host, :$port, :$username, :$password, :basic-auth); }, "new client with basic auth credentials";
-    my $session;
+        lives-ok { $auth-client = Sofa.new(:$host, :$port, :$username, :$password, :basic-auth); }, "new client with basic auth credentials";
+        my $session;
 
-    throws-like { $session = $auth-client.session() }, X::NotAuthorised, "get session for a non-existent user";
+        throws-like { $session = $auth-client.session() }, X::NotAuthorised, "get session for a non-existent user";
 
-    lives-ok { $sofa.add-user(name => $username, :$password) }, "create a new user";
+        lives-ok { $sofa.add-user(name => $username, :$password) }, "create a new user";
 
-    lives-ok { $session = $auth-client.session() }, "get session for now existent user";
-    ok $session.is-authenticated, "and the session is authenticated";
+        lives-ok { $session = $auth-client.session() }, "get session for now existent user";
+        ok $session.is-authenticated, "and the session is authenticated";
 
-    LEAVE {
-        try $sofa.delete-user($username);
-    }
+        LEAVE {
+            try $sofa.delete-user($username);
+        }
+    }, "basic authentication";
+    todo "do cookie authentication";
+    subtest {
+        my $username =  ('a' .. 'z').pick(8).join('');
+        my $password =  ('a' .. 'z').pick(8).join('');
+
+        my $auth-client;
+
+        lives-ok { $auth-client = Sofa.new(:$host, :$port, :$username, :$password); }, "new client with cookie auth credentials";
+        my $session;
+
+        throws-like { $session = $auth-client.session() }, X::NotAuthorised, "get session for a non-existent user";
+
+        lives-ok { $sofa.add-user(name => $username, :$password) }, "create a new user";
+
+        lives-ok { $session = $auth-client.session() }, "get session for now existent user";
+        ok $session.is-authenticated, "and the session is authenticated";
+
+        LEAVE {
+            try $sofa.delete-user($username);
+        }
+    }, "cookie authentication";
 }
 else {
     skip "not admin can't do the tests";
