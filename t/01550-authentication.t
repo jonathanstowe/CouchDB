@@ -54,7 +54,6 @@ if $sofa.is-admin {
             try $sofa.delete-user($username);
         }
     }, "basic authentication";
-    todo "do cookie authentication";
     subtest {
         my $username =  ('a' .. 'z').pick(8).join('');
         my $password =  ('a' .. 'z').pick(8).join('');

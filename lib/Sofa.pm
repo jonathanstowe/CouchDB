@@ -19,25 +19,45 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     has Bool $.basic-auth;
 
+    has Bool $!has-session;
+
     has Sofa::Database @.databases;
 
     method ua() returns Sofa::UserAgent is rw {
         if not $!ua.defined {
             $!ua = Sofa::UserAgent.new(host => $!host, port => $!port, secure => $!secure);
-            if $!username.defined && $!password.defined {
-                if $!basic-auth {
-                    $!ua.auth($!username, $!password);
-                }
-                else {
-                    my %form = name => $!username, password => $!password;
-                    my $res = $!ua.post(path => '_session', :%form);
-                    if not $res.is-success {
-                        self!get-exception($res.code, '_session', "getting session", Sofa::Exception::Server).throw;
-                    }
-                }
+            if self!use-basic-auth {
+                $!ua.auth($!username, $!password);
             }
         }
+        if self!requires-session {
+            self.start-session;
+        }
         $!ua;
+    }
+
+    method !got-auth() returns Bool {
+        $!username.defined && $!password.defined;
+    }
+
+    method !use-basic-auth() returns Bool {
+        self!got-auth && $!basic-auth;
+    }
+
+    method !requires-session() {
+        self!got-auth() && not $!basic-auth && not $!has-session;
+    }
+
+    method start-session() {
+        my %form = name => $!username, password => $!password;
+        my $res = $!ua.post(path => '_session', :%form);
+        if not $res.is-success {
+            $!has-session = False;
+            self!get-exception($res.code, '_session', "getting session", Sofa::Exception::Server).throw;
+        }
+        else {
+            $!has-session = True;
+        }
     }
 
     method !db-names() {
