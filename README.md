@@ -35,4 +35,56 @@ documents and the use of the views, lists, shows and updates in them,
 and the creation, retrieval, update and deletion of attachments on both
 normal and design documents.
 
+## Installation
 
+To test this properly you will need a couchdb instance that you have
+administrative access to, though some tests can be performed without
+access to a couchdb server at all about two thirds will be skipped.
+For convenience it will default to attempting to using an instance
+on the local host and default port (5984) without any admin controls,
+but the connection and authentication information can be provided
+through environment variables that should be set before running the
+tests:
+
+	* COUCH_PORT - set the port to connect to. Default is 5984
+	* COUCH_HOST - the host to connect to. Default is 'localhost'
+	* COUCH_USERNAME - the name of a configured admin user
+	* COUCH_PASSWORD - the password of the above admin user
+
+The tests need to have admin privileges because they need to create
+databases and manipulate the design documents thereof which both require
+the admin privileges.  None of the tests will manipulate an existing
+database (except for the authentication database which it does to test
+the creation of new users and the authentication of them.) Of course
+you probably don't want to run the tests against a production server
+anyway, but I can't check whether that is the case for you.
+
+If you have a working Rakudo Perl 6 installation then you should be
+able to install using "panda" (being sure to set the environment
+variables described above as required:)
+
+	panda install Sofa
+
+Or if you have a local copy of the source code:
+
+	panda install .
+
+Though I haven't tested it, I don't see any reason why this shouldn't
+also work with some equally capable installer such as "zef".
+
+## Support
+
+This module supports most of the common features that you may need
+to create an application that uses CouchDB, but if you feel that
+it omits something you really must have then please feel free to
+suggest or even send a patch. I'd probably prefer any greater
+degree of abstraction implemented in a separate module however.
+
+Please send any suggestions/patches/feedback to
+https://github.com/jonathanstowe/Sofa/issues.
+
+## License and Copyright
+
+This is free software, please see the LICENSE file for details.
+
+© Jonathan Stowe 2015, 2016
