@@ -12,6 +12,17 @@ plan 3;
 my $port = %*ENV<COUCH_PORT> // 5984;
 my $host = %*ENV<COUCH_HOST> // 'localhost';
 
+
+my $username = %*ENV<COUCH_USERNAME>;
+my $password = %*ENV<COUCH_PASSWORD>;
+
+my %auth;
+
+# clearly there is a chicken and egg situation with the basic authentican
+# but it is completely unavoidable.
+if $username.defined && $password.defined {
+    %auth = (:$username, :$password, :basic-auth);
+}
 if !check-socket($port, $host) {
     skip-rest "no couchdb available";
     exit;
@@ -19,14 +30,19 @@ if !check-socket($port, $host) {
 
 my $sofa;
 
-lives-ok { $sofa = Sofa.new(:$host, :$port) }, "can create an object";
+lives-ok { $sofa = Sofa.new(:$host, :$port, |%auth) }, "can create an object";
 
-my $stats;
+if $sofa.is-admin {
+    my $stats;
 
-lives-ok { $stats = $sofa.configuration }, "get configuration";
+    lives-ok { $stats = $sofa.configuration }, "get configuration";
 
-# need to do the run-time lookup to make sure the method is doing it right.
-isa-ok $stats, ::('Sofa::Config'), "and we got a config object";
+    # need to do the run-time lookup to make sure the method is doing it right.
+    isa-ok $stats, ::('Sofa::Config'), "and we got a config object";
+}
+else {
+    skip-rest "need admin to get config";
+}
 
 
 done-testing;
