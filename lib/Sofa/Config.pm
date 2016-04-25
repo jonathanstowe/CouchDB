@@ -14,13 +14,13 @@ class Sofa::Config does JSON::Class is sofa-path('_config') {
         has Str $.credentials;
     }
     class CouchHttpdAuth does JSON::Class {
-        has Str $.require_valid_user;
-        has Str $.allow_persistent_cookies;
-        has Str $.auth_cache_size;
-        has Str $.authentication_db;
-        has Str $.timeout;
-        has Str $.iterations;
-        has Str $.authentication_redirect;
+        has Bool $.require-valid-user             is json-name('require_valid_user');
+        has Bool $.allow-persistent-cookies       is json-name('allow_persistent_cookies');
+        has Int  $.auth-cache-size                is json-name('auth_cache_size')           is unmarshalled-by({ Int($_) });
+        has Str  $.authentication-db              is json-name('authentication_db');
+        has Int  $.timeout                                                                  is unmarshalled-by({ Int($_) });
+        has Int  $.iterations                                                               is unmarshalled-by({ Int($_) });
+        has Str  $.authentication-redirect        is json-name('authentication_redirect');
     }
     class Daemons does JSON::Class {
         has Str $.auth_cache;
@@ -156,7 +156,7 @@ class Sofa::Config does JSON::Class is sofa-path('_config') {
     has HttpdDesignHandlers $.httpd_design_handlers;
     has Ssl $.ssl;
     has Daemons $.daemons;
-    has CouchHttpdAuth $.couch_httpd_auth;
+    has CouchHttpdAuth $.couch-httpd-auth is json-name('couch_httpd_auth') handles *;
     has Attachments $.attachments;
     has ViewCompaction $.view_compaction;
     has Stats $.stats;
