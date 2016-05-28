@@ -1,8 +1,8 @@
 #!perl6
 
-use v6;
+use v6.c;
 
-use lib "lib";
+use JSON::Fast;
 
 use Test;
 

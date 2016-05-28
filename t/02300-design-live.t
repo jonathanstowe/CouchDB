@@ -2,6 +2,7 @@
 
 use v6.c;
 
+use JSON::Fast;
 use Test;
 plan 112;
 
