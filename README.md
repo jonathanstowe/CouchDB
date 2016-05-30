@@ -83,7 +83,7 @@ degree of abstraction implemented in a separate module however.
 Please send any suggestions/patches/feedback to
 https://github.com/jonathanstowe/Sofa/issues.
 
-## License and Copyright
+## Licence and Copyright
 
 This is free software, please see the LICENCE file for details.
 
