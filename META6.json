@@ -2,7 +2,7 @@
     "perl": "6.c",
     "name": "Sofa",
     "description": "Simple interface to CouchDB",
-    "version": "0.0.1",
+    "version": "0.0.1.0",
     "build-depends": [
 
     ],
