@@ -170,13 +170,13 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     }
 
     multi method create-document(Sofa::Database:D: JSON::Class $document) returns Sofa::Document {
-        $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
+        sink $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
         self!post-document($document, Str, what => 'creating document');
     }
 
 
     multi method create-document(Sofa::Database:D: Str $doc-id, JSON::Class $document) returns Sofa::Document {
-        $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
+        sink $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
         self!put-document($document, $doc-id, what => 'creating document' );
     }
 
