@@ -68,11 +68,11 @@ class Sofa::UserAgent is HTTP::UserAgent {
     }
 
     multi method put(:$path!, :$params, :%content, *%headers) returns CouchResponse {
-        samewith(:$path, :$params, content => to-json(%content), |%headers);
+        self.put(:$path, :$params, content => to-json(%content), |%headers);
     }
 
     multi method put(:$path!, :$params, ToJSON :$content, *%headers) returns CouchResponse {
-        samewith(:$path, :$params, content => $content.to-json, |%headers);
+        self.put(:$path, :$params, content => $content.to-json, |%headers);
     }
 
     proto method post(|c) { * }
@@ -89,11 +89,11 @@ class Sofa::UserAgent is HTTP::UserAgent {
     }
 
     multi method post(:$path!, :$params, :%content, *%headers) returns CouchResponse {
-        samewith(:$path, :$params, content => to-json(%content), |%headers);
+        self.post(:$path, :$params, content => to-json(%content), |%headers);
     }
 
     multi method post(:$path!, :$params,  ToJSON :$content, *%headers) returns CouchResponse {
-        samewith(:$path, :$params, content => $content.to-json, |%headers);
+        self.post(:$path, :$params, content => $content.to-json, |%headers);
     }
 
     proto method delete(|c) { * }
