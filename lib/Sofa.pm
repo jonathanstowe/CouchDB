@@ -112,7 +112,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     multi method add-user(Str :$name!, Str :$password, :@roles) returns Sofa::User {
         my $user = Sofa::User.new(:$name, :$password, :@roles);
-        samewith($user);
+        self.add-user($user);
         $user;
     }
 
@@ -133,7 +133,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     multi method delete-user(Str $name) {
         my $user = self.get-user($name);
-        samewith($user);
+        self.delete-user($user);
     }
 
     multi method delete-user(Sofa::User:D $user) {
