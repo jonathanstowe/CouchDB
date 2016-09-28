@@ -9,5 +9,5 @@ perl6:
   - latest
 install:
   - rakudobrew build-panda
-  - panda install JSON::Fast
-  - panda installdeps .
+  - panda --notests install JSON::Fast
+  - panda --notests installdeps .
