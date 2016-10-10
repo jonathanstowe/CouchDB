@@ -10,8 +10,8 @@ module Sofa::Method {
         has Mu  $.sofa-item;
 
         sub load-if-required(Str $f) { 
-            my $t = ::($f); 
-            if $t ~~ Failure { 
+            my $t = ::($f);
+            if !$t && $t ~~ Failure { 
                 $t = (require ::($f)) 
             } 
             $t 
