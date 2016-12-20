@@ -4,7 +4,7 @@ use v6;
 
 use Test;
 
-use-ok "Sofa::Session", "Sofa::Session compiles";
+use Sofa::Session;
 
 my $ss = ::('Sofa::Session');
 

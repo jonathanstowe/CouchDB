@@ -8,6 +8,7 @@ plan 23;
 use CheckSocket;
 
 use Sofa;
+use JSON::Class;
 
 my $port = %*ENV<COUCH_PORT> // 5984;
 my $host = %*ENV<COUCH_HOST> // 'localhost';

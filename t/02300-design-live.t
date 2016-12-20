@@ -3,6 +3,7 @@
 use v6.c;
 
 use JSON::Fast;
+use JSON::Class;
 use Test;
 plan 112;
 

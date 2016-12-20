@@ -3,6 +3,8 @@
 use v6;
 
 use Test;
+use HTTP::UserAgent;
+use URI::Template;
 
 use-ok('Sofa');
 

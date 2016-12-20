@@ -5,6 +5,7 @@ use v6;
 use Test;
 
 use Sofa::Method;
+use Sofa::Item;
 
 use lib $*PROGRAM.parent.child('lib').Str;
 

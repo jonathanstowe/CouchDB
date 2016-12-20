@@ -1,5 +1,6 @@
 use v6.c;
 
+use Sofa::Item;
 module Sofa::Method {
 
     use Sofa::Exception;
