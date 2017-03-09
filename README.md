@@ -85,6 +85,6 @@ https://github.com/jonathanstowe/Sofa/issues.
 
 ## Licence and Copyright
 
-This is free software, please see the LICENCE file for details.
+This is free software, please see the [LICENCE](LICENCE) file for details.
 
-© Jonathan Stowe 2015, 2016
+© Jonathan Stowe 2015, 2016, 2017
