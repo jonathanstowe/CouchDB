@@ -151,12 +151,12 @@ if $sofa.is-admin {
 
     lives-ok { $view-data = $db.get-view($design, 'by-name', :descending) }, "get-view(:descending)";
     my @new-rows = $view-data.rows;
-    is-deeply @new-rows, @rows.reverse, "and it looks like it's the same (as anticipated)";
+    is-deeply @new-rows, [@rows.reverse], "and it looks like it's the same (as anticipated)";
 
 
     lives-ok { $view-data = $db.get-view($design.name, 'by-name', :descending) }, "get-view by names (with descending to check we pass the args on)";
     @new-rows = $view-data.rows;
-    is-deeply @new-rows, @rows.reverse, "and it looks like it's the same (as anticipated)";
+    is-deeply @new-rows, [@rows.reverse], "and it looks like it's the same (as anticipated)";
 
     my $show-data;
 
