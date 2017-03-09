@@ -2,17 +2,18 @@
     "perl": "6.c",
     "name": "Sofa",
     "description": "Simple interface to CouchDB",
+	"tags" : [ "couchdb", "NoSQL", "Database" ],
     "version": "0.0.1.0",
     "build-depends": [
-
     ],
     "test-depends": [
+		"JSON::Fast",
         "Test::META",
         "CheckSocket"
     ],
     "depends": [
         "JSON::Fast",
-		  "JSON::Name",
+		"JSON::Name",
         "JSON::Marshal",
         "JSON::Unmarshal",
         "JSON::Class",
@@ -38,7 +39,9 @@
         "Sofa::Exception": "lib/Sofa/Exception.pm"
     },
     "support": {
-        "source": "git://github.com/jonathanstowe/Sofa.git"
+        "source": "git://github.com/jonathanstowe/Sofa.git",
+		"email" : "jns+gh@gellyfish.co.uk",
+		"bugtracker" : "https://github.com/jonathanstowe/Sofa/issues"
     },
     "source-url": "git://github.com/jonathanstowe/Sofa.git"
 }
