@@ -10,8 +10,6 @@ use Sofa::Item;
 use lib $*PROGRAM.parent.child('lib').Str;
 
 {
-    use Sofa::Item;
-
     class Foo is sofa-path('_foo') {
     }
 
