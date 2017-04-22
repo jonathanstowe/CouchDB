@@ -1,47 +1,61 @@
 {
-    "perl": "6.c",
-    "name": "Sofa",
-    "description": "Simple interface to CouchDB",
-	"tags" : [ "couchdb", "NoSQL", "Database" ],
-    "version": "0.0.1.0",
-    "build-depends": [
-    ],
-    "test-depends": [
-		"JSON::Fast",
-        "Test::META",
-        "CheckSocket"
-    ],
-    "depends": [
-        "JSON::Fast",
-		"JSON::Name",
-        "JSON::Marshal",
-        "JSON::Unmarshal",
-        "JSON::Class",
-        "MIME::Types",
-        "HTTP::UserAgent",
-        "URI",
-        "URI::Template",
-        "Oyatul"
-    ],
-    "provides": {
-        "Sofa": "lib/Sofa.pm",
-        "Sofa::UserAgent": "lib/Sofa/UserAgent.pm",
-        "Sofa::Design": "lib/Sofa/Design.pm",
-        "Sofa::Item": "lib/Sofa/Item.pm",
-        "Sofa::Document::Wrapper": "lib/Sofa/Document/Wrapper.pm",
-        "Sofa::Document::Attachment": "lib/Sofa/Document/Attachment.pm",
-        "Sofa::Server": "lib/Sofa/Server.pm",
-        "Sofa::Database": "lib/Sofa/Database.pm",
-        "Sofa::Method": "lib/Sofa/Method.pm",
-        "Sofa::Statistics": "lib/Sofa/Statistics.pm",
-        "Sofa::Config": "lib/Sofa/Config.pm",
-        "Sofa::Document": "lib/Sofa/Document.pm",
-        "Sofa::Exception": "lib/Sofa/Exception.pm"
-    },
-    "support": {
-        "source": "git://github.com/jonathanstowe/Sofa.git",
-		"email" : "jns+gh@gellyfish.co.uk",
-		"bugtracker" : "https://github.com/jonathanstowe/Sofa/issues"
-    },
-    "source-url": "git://github.com/jonathanstowe/Sofa.git"
+  "name": "Sofa",
+  "source-url": "git://github.com/jonathanstowe/Sofa.git",
+  "support": {
+    "email": "jns+gh@gellyfish.co.uk",
+    "source": "git://github.com/jonathanstowe/Sofa.git",
+    "bugtracker": "https://github.com/jonathanstowe/Sofa/issues"
+  },
+  "perl": "6.c",
+  "resources": [
+    
+  ],
+  "build-depends": [
+    
+  ],
+  "auth": "github:jonathanstowe",
+  "depends": [
+    "JSON::Fast",
+    "JSON::Name",
+    "JSON::Marshal",
+    "JSON::Unmarshal",
+    "JSON::Class",
+    "MIME::Types",
+    "HTTP::UserAgent",
+    "URI",
+    "URI::Template",
+    "Oyatul"
+  ],
+  "tags": [
+    "couchdb",
+    "NoSQL",
+    "Database"
+  ],
+  "license": "Artistic-2.0",
+  "test-depends": [
+    "JSON::Fast",
+    "Test::META",
+    "CheckSocket"
+  ],
+  "provides": {
+    "Sofa::Item": "lib/Sofa/Item.pm",
+    "Sofa::Database": "lib/Sofa/Database.pm",
+    "Sofa::Config": "lib/Sofa/Config.pm",
+    "Sofa::UserAgent": "lib/Sofa/UserAgent.pm",
+    "Sofa::Statistics": "lib/Sofa/Statistics.pm",
+    "Sofa::Method": "lib/Sofa/Method.pm",
+    "Sofa::Document": "lib/Sofa/Document.pm",
+    "Sofa::Exception": "lib/Sofa/Exception.pm",
+    "Sofa::Document::Wrapper": "lib/Sofa/Document/Wrapper.pm",
+    "Sofa": "lib/Sofa.pm",
+    "Sofa::Document::Attachment": "lib/Sofa/Document/Attachment.pm",
+    "Sofa::Design": "lib/Sofa/Design.pm",
+    "Sofa::Server": "lib/Sofa/Server.pm"
+  },
+  "version": "0.0.1.0",
+  "authors": [
+	"Jonathan Stowe <jns+gh@gellyfish.co.uk>"
+  ],
+  "description": "Simple interface to CouchDB",
+  "meta6": "0"
 }
