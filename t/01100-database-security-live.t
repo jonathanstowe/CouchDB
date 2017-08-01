@@ -26,7 +26,6 @@ if $username.defined && $password.defined {
 my Bool $test-changes = %*ENV<SOFA_TEST_CHANGES>:exists;
 
 if !check-socket($port, $host) {
-    plan 1;
     skip-rest "no couchdb available";
     exit;
 }

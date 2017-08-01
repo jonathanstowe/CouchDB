@@ -1,5 +1,5 @@
 use v6.c;
-use JSON::Class:ver(v0.0.5..*);
+use JSON::Class:ver(v0.0.5+);
 
 class Sofa::Document does JSON::Class {
     has Str  $.id;

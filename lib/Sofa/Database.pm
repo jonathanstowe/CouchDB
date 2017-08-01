@@ -1,7 +1,7 @@
 use JSON::Name;
 use Sofa::Method;
 
-use JSON::Class:ver(v0.0.5..*);
+use JSON::Class:ver(v0.0.5+);
 use Sofa::UserAgent;
 
 use Sofa::Exception;
@@ -38,9 +38,9 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     }
 
     method is-valid-name(Str:D $name) {
-	    my token valid-db-name {
-		    ^<[a .. z]><[a .. z0 .. 9_$()+/-]>*$
-	    }
+        my token valid-db-name {
+            ^<[a .. z]><[a .. z0 .. 9_$()+/-]>*$
+        }
         so ($name ~~ /<valid-db-name>/);
     }
 
@@ -113,7 +113,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
                     if $!delete-promise {
                         last;
                     }
-                    my $changes = self.get-changes($last-seq,:poll); 
+                    my $changes = self.get-changes($last-seq,:poll);
                     for $changes<results>.list -> $result {
                         if !($last-seq.defined && ($last-seq eq $result<seq> )) {
                             $supplier.emit($result);
@@ -191,18 +191,18 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
         $new-doc-id;
     }
 
-    
+
     subset NamedDesign  of Sofa::Design where  { $_.defined && ( $_.name.defined || $_.sofa-document-id.defined ) };
     subset NoNameDesign of Sofa::Design where  { $_.defined && ( !$_.name.defined and !$_.sofa-document-id.defined ) };
 
     proto method put-design(|c) { * }
 
     multi method put-design(Sofa::Database:D: NamedDesign $doc ) returns Sofa::Document {
-        self!put-document($doc, $doc.id-or-name, $doc.sofa-document-revision, what => 'putting design document'); 
+        self!put-document($doc, $doc.id-or-name, $doc.sofa-document-revision, what => 'putting design document');
     }
 
     multi method put-design(Sofa::Database:D: NoNameDesign $doc, Str:D $doc-id ) returns Sofa::Document {
-        self!put-document($doc, design-id($doc-id), $doc.sofa-document-revision, what => 'putting design document'); 
+        self!put-document($doc, design-id($doc-id), $doc.sofa-document-revision, what => 'putting design document');
     }
 
     # Because we might not dealing with one we created ourself $!name can't be required
@@ -222,7 +222,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     }
 
     proto method add-design-attachment(|c) { * }
-    
+
     multi method add-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, $content ) returns Sofa::Document {
         self.add-document-attachment($doc, $attachment-name, $content-type, $content);
     }
@@ -417,7 +417,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     multi method get-document(Sofa::Database:D: Str $doc-id ) {
         self!get-document($doc-id);
     }
-    
+
     multi method get-document(Sofa::Database:D: Str $doc-id, JSON::Class:U $c ) {
         self!get-document($doc-id, type => $c);
     }

@@ -27,7 +27,6 @@ if $username.defined && $password.defined {
 }
 
 if !check-socket($port, $host) {
-    plan 1;
     skip-rest "no couchdb available";
     exit;
 }

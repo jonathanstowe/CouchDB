@@ -27,7 +27,6 @@ if $username.defined && $password.defined {
 }
 
 if !check-socket($port, $host) {
-    plan 1;
     skip-rest "no couchdb available";
     exit;
 }
@@ -72,7 +71,7 @@ if $sofa.is-admin {
     throws-like { $db.get-design('contacts') }, X::NoDocument, "get-design throws again as it doesn't exist";
 
     my $data-dir = $*PROGRAM.parent.child('data');
-    
+
     lives-ok { $design = Sofa::Design.from-json($data-dir.child('design-tests.json').slurp) }, "get our test design";
     lives-ok { $db.put-design($design) }, "and put that";
 
@@ -224,7 +223,7 @@ if $sofa.is-admin {
 
 
     is $db.all-docs.elems, $doc-count + 4, "and we added four documents";
-    
+
     lives-ok { $db.delete }, "delete the database";
 }
 else {

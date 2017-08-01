@@ -26,7 +26,6 @@ if $username.defined && $password.defined {
 }
 
 if !check-socket($port, $host) {
-    plan 1;
     skip-rest "no couchdb available";
     exit;
 }
@@ -63,7 +62,7 @@ if $sofa.is-admin {
 
     my @all-docs;
 
-    lives-ok { 
+    lives-ok {
         @all-docs = $db.all-docs(:detail, type => TestClass);
     }, "get all-docs with type";
 

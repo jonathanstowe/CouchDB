@@ -15,7 +15,7 @@ role Sofa::Document::Wrapper {
     sub _get_doc_name() {
         my $n = ::?CLASS.^name.lc.subst(/\:+/,"_", :g);
         $n.subst(/\+.*/,'');
-    } 
+    }
     method to-json() {
         self does JSON::Class;
         if not $!sofa-document-type {
