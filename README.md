@@ -60,14 +60,14 @@ you probably don't want to run the tests against a production server
 anyway, but I can't check whether that is the case for you.
 
 If you have a working Rakudo Perl 6 installation then you should be
-able to install using "panda" (being sure to set the environment
+able to install using *zef* (being sure to set the environment
 variables described above as required:)
 
-	panda install Sofa
+	zef install Sofa
 
 Or if you have a local copy of the source code:
 
-	panda install .
+	zef install .
 
 Though I haven't tested it, I don't see any reason why this shouldn't
 also work with some equally capable installer such as "zef".
