@@ -26,7 +26,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     has Int         $.disk-size                     is json-name('disk_size');
     has Int         $.data-size                     is json-name('data_size');
     has DateTime    $.instance-start-time           is json-name('instance_start_time') is unmarshalled-by(&microsecs-to-dt);
-    has Int         $.update_seq;
+    has Str         $.update_seq;
     has Str         $.name                is json-name('db_name');
 
     has Sofa::UserAgent $.ua is rw;
