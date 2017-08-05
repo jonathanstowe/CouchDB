@@ -39,6 +39,14 @@ class Sofa::Exception {
         }
     }
 
+    class X::InvalidPath is Exception {
+        has $.name;
+        has $.what;
+        method message() {
+            "Path '{ $!name }' not found while '{ $!what }'";
+        }
+    }
+
     class X::NotAuthorised is Exception {
         has $.name;
         has $.what;
@@ -74,6 +82,9 @@ class Sofa::Exception {
                         }
                         when Document {
                             X::NoDocument.new(:$name, :$what);
+                        }
+                        when Server {
+                            X::InvalidPath.new(:$name, :$what);
                         }
                     }
                 }
