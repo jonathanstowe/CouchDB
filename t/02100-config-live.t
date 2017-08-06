@@ -33,12 +33,17 @@ my $sofa;
 lives-ok { $sofa = Sofa.new(:$host, :$port, |%auth) }, "can create an object";
 
 if $sofa.is-admin {
-    my $stats;
+    if $sofa.server-details.version >= v2.0.0 {
+        skip-rest "can't do per-node configuration for v2 yet";
+    }
+    else {
+        my $stats;
 
-    lives-ok { $stats = $sofa.configuration }, "get configuration";
+        lives-ok { $stats = $sofa.configuration }, "get configuration";
 
-    # need to do the run-time lookup to make sure the method is doing it right.
-    isa-ok $stats, ::('Sofa::Config'), "and we got a config object";
+        # need to do the run-time lookup to make sure the method is doing it right.
+        isa-ok $stats, ::('Sofa::Config'), "and we got a config object";
+    }
 }
 else {
     skip-rest "need admin to get config";
