@@ -59,6 +59,11 @@ the creation of new users and the authentication of them.) Of course
 you probably don't want to run the tests against a production server
 anyway, but I can't check whether that is the case for you.
 
+If you are testing with v2.0.0 or later of CouchDB you may have
+needed to set the admin user and password as part of the setup of the
+server, in which case you will need to set ```COUCH_USERNAME``` and
+```COUCH_PASSWORD``` at minimum for the tests.
+
 If you have a working Rakudo Perl 6 installation then you should be
 able to install using *zef* (being sure to set the environment
 variables described above as required:)
@@ -79,6 +84,12 @@ to create an application that uses CouchDB, but if you feel that
 it omits something you really must have then please feel free to
 suggest or even send a patch. I'd probably prefer any greater
 degree of abstraction implemented in a separate module however.
+
+The module should work with both v1.6.1 and v2.0.0 (or greater)
+CouchDB servers though it currently doesn't properly support
+some of the v2 specific features such as Mango queries and the
+clustering API, and also the node specific ```statistics``` and
+```config``` APIs.
 
 Please send any suggestions/patches/feedback to
 https://github.com/jonathanstowe/Sofa/issues.
