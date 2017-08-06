@@ -11,7 +11,16 @@ use Sofa::User;
 my $port = %*ENV<COUCH_PORT> // 5984;
 my $host = %*ENV<COUCH_HOST> // 'localhost';
 
-my Bool $test-changes = %*ENV<SOFA_TEST_CHANGES>:exists;
+my $username = %*ENV<COUCH_USERNAME>;
+my $password = %*ENV<COUCH_PASSWORD>;
+
+my %auth;
+
+# clearly there is a chicken and egg situation with the basic authentican
+# but it is completely unavoidable.
+if $username.defined && $password.defined {
+    %auth = (:$username, :$password, :basic-auth);
+}
 
 if !check-socket($port, $host) {
     plan 1;
@@ -21,7 +30,7 @@ if !check-socket($port, $host) {
 
 my $sofa;
 
-lives-ok { $sofa = Sofa.new(:$host, :$port) }, "can create an object";
+lives-ok { $sofa = Sofa.new(:$host, :$port, |%auth) }, "can create an object";
 
 if $sofa.is-admin {
     my @users;
