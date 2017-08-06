@@ -145,5 +145,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
     method statistics() is sofa-item('Sofa::Statistics') { * }
 
     method configuration() is sofa-item('Sofa::Config') { * }
+
+    method server-details() is sofa-item('Sofa::Server') { * }
 }
 # vim: expandtab shiftwidth=4 ft=perl6

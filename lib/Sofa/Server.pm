@@ -1,9 +1,11 @@
-use v6;
+use v6.c;
 
 use JSON::Name;
 use JSON::Class:ver(v0.0.5+);
 
-class Sofa::Server does JSON::Class {
+use Sofa::Item;
+
+class Sofa::Server does JSON::Class is sofa-path('') {
     class Vendor {
         has Version $.version is unmarshalled-by('new');
         has Str $.name;
