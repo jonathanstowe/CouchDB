@@ -1,8 +1,11 @@
 use v6.c;
 
 module Sofa::Item {
-    class MetamodelX::ClassHOW is Metamodel::ClassHOW {
-        has Str $.sofa-path is rw;
+    role MetamodelX::ClassHOW {
+        has Str $!sofa-path;
+        method sofa-path(--> Str) is rw {
+            $!sofa-path;
+        }
     }
 
     multi sub trait_mod:<is>(Mu:U $type, Str :$sofa-path!) is export {
@@ -13,7 +16,7 @@ module Sofa::Item {
 
 my package EXPORTHOW {
     package SUPERSEDE {
-       constant class = Sofa::Item::MetamodelX::ClassHOW;
+       constant class = Metamodel::ClassHOW but Sofa::Item::MetamodelX::ClassHOW;
     }
 }
 
