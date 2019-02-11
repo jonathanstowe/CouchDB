@@ -20,7 +20,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     has Int         $.document-delete-count         is json-name('doc_del_count');
     has Int         $.disk-format-version           is json-name('disk_format_version');
     has Int         $.committed-update-seq          is json-name('commited_update_seq');
-    has Int         $.purge-seq                     is json-name('purge_seq');
+    has Str         $.purge-seq                     is json-name('purge_seq');
     has Int         $.doc-count                     is json-name('doc_count');
     has Bool        $.compact-running               is json-name('compact_running');
     has Int         $.disk-size                     is json-name('disk_size');
