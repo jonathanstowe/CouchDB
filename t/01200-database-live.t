@@ -52,13 +52,13 @@ if $sofa.is-admin {
 
     my $db ;
 
-    throws-like { Sofa::Database.fetch(name => $name, ua => $sofa.ua) }, X::NoDatabase, "fetch no-exist database throws";
+    throws-like { Sofa::Database.fetch(name => $name, ua => $sofa.ua) }, X::Sofa::NoDatabase, "fetch no-exist database throws";
 
     nok $sofa.get-database($name).defined, "and get-database doesn't give us one";
 
     lives-ok { $db = $sofa.create-database($name) }, "create-database('$name')";
 
-    throws-like { $sofa.create-database($name) }, X::DatabaseExists, "create existing throws";
+    throws-like { $sofa.create-database($name) }, X::Sofa::DatabaseExists, "create existing throws";
 
     isa-ok $db, Sofa::Database, "and it returned the right sort of thing";
     is $db.name, $name, "and the right name is returned";
@@ -112,7 +112,7 @@ if $sofa.is-admin {
 
     my $new-new-rev;
 
-    throws-like { $db.update-document($doc, %doc) }, X::DocumentConflict, "updating document with an old rev throws";
+    throws-like { $db.update-document($doc, %doc) }, X::Sofa::DocumentConflict, "updating document with an old rev throws";
 
     lives-ok { $new-new-rev = $db.update-document($new-rev, %doc) }, "update document";
 
@@ -126,7 +126,7 @@ if $sofa.is-admin {
     is $new-doc<_rev>, $new-new-rev.rev, "and the rev we expected";
 
 
-    throws-like { $db.delete-document($doc) }, X::DocumentConflict, "deleting with an older rev throws";
+    throws-like { $db.delete-document($doc) }, X::Sofa::DocumentConflict, "deleting with an older rev throws";
     lives-ok { $db.delete-document($new-new-rev) }, "delete the document";
 
     is $db.all-docs.elems, 0, "and the document went away";
@@ -158,7 +158,7 @@ if $sofa.is-admin {
 
     is $sofa.databases.elems, $db-count, "and the number is back to what it was";
 
-    throws-like { $db.delete }, X::NoDatabase, "throws on a second attempt to delete";
+    throws-like { $db.delete }, X::Sofa::NoDatabase, "throws on a second attempt to delete";
 }
 else {
     skip-rest "not admin can't do all tests";

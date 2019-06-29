@@ -41,12 +41,12 @@ if $sofa.is-admin {
 
     lives-ok { $db = $sofa.create-database($name) }, "create-database('$name')";
 
-    class X::Foo is Exception {
+    class X::Sofa::Foo is Exception {
     }
 
-    throws-like { $db.get-design('contacts'); }, X::NoDocument, "get-design throws when it doesn't exist";
+    throws-like { $db.get-design('contacts'); }, X::Sofa::NoDocument, "get-design throws when it doesn't exist";
 
-    throws-like { $db.put-design(Sofa::Design.new) }, X::NoIdOrName, "put-design throws when there is no name or id";
+    throws-like { $db.put-design(Sofa::Design.new) }, X::Sofa::NoIdOrName, "put-design throws when there is no name or id";
 
     my $doc;
     lives-ok { $doc = $db.put-design(Sofa::Design.new(name => 'contacts')) }, "put-design with name in object";
@@ -58,7 +58,7 @@ if $sofa.is-admin {
     is $design.name, "contacts", "got the right name";
     is $design.sofa-document-revision, $doc.rev, "got the right revision";
     lives-ok { $db.delete-design($design) }, "delete that one";
-    throws-like { $db.get-design('contacts') }, X::NoDocument, "get-design throws again as it doesn't exist";
+    throws-like { $db.get-design('contacts') }, X::Sofa::NoDocument, "get-design throws again as it doesn't exist";
 
     lives-ok { $doc = $db.put-design(Sofa::Design.new(),'contacts') }, "put-design with name as argument";
     is $doc.id, '_design/contacts', "and the id was populated properly";
@@ -68,7 +68,7 @@ if $sofa.is-admin {
     is $design.name, "contacts", "got the right name";
     is $design.sofa-document-revision, $doc.rev, "got the right revision";
     lives-ok { $db.delete-design($doc) }, "delete that one (use the Sofa::Document)";
-    throws-like { $db.get-design('contacts') }, X::NoDocument, "get-design throws again as it doesn't exist";
+    throws-like { $db.get-design('contacts') }, X::Sofa::NoDocument, "get-design throws again as it doesn't exist";
 
     my $data-dir = $*PROGRAM.parent.child('data');
 

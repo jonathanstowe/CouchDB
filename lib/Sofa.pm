@@ -87,7 +87,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
             @.databases.push: $db;
         }
         else {
-            X::DatabaseExists.new(:$name).throw;
+            X::Sofa::DatabaseExists.new(:$name).throw;
         }
         $db;
     }

@@ -17,38 +17,38 @@ class TestException does Sofa::Exception::Handler {
 my @tests = (
     {
         code    =>  400,
-        type    => X::InvalidName
+        type    => X::Sofa::InvalidName
     },
     {
         code    => 401,
-        type    =>  X::NotAuthorised
+        type    =>  X::Sofa::NotAuthorised
     },
     {
         code    => 404,
-        type    => X::NoDatabase,
+        type    => X::Sofa::NoDatabase,
         context => Sofa::Exception::Database
     },
     {
         code    => 404,
-        type    => X::NoDocument,
+        type    => X::Sofa::NoDocument,
         context => Sofa::Exception::Document
     },
     {
         code    => 404,
-        type    => X::InvalidPath,
+        type    => X::Sofa::InvalidPath,
         context => Sofa::Exception::Server
     },
     {
         code    => 409,
-        type    => X::DocumentConflict,
+        type    => X::Sofa::DocumentConflict,
     },
     {
         code    => 412,
-        type    => X::DatabaseExists,
+        type    => X::Sofa::DatabaseExists,
     },
     {
         code    => 999,
-        type    => X::SofaWTF,
+        type    => X::Sofa::SofaWTF,
     }
 );
 

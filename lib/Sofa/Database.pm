@@ -73,7 +73,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
             }
         }
         else {
-            X::InvalidName.new(:$name).throw;
+            X::Sofa::InvalidName.new(:$name).throw;
         }
         $db;
     }
@@ -207,7 +207,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     # Because we might not dealing with one we created ourself $!name can't be required
     multi method put-design(NoNameDesign $) {
-        X::NoIdOrName.new.throw;
+        X::Sofa::NoIdOrName.new.throw;
     }
 
 
@@ -323,7 +323,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
             }
         }
         else {
-            X::NoDocument.new(name => $view-name, what => "getting view").throw;
+            X::Sofa::NoDocument.new(name => $view-name, what => "getting view").throw;
         }
     }
 
@@ -341,7 +341,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
         }
         else {
-            X::NoDocument.new(name => $show-name, what => "getting show").throw;
+            X::Sofa::NoDocument.new(name => $show-name, what => "getting show").throw;
         }
     }
 
@@ -359,11 +359,11 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
                 self!get-document(@design-parts, params => %params, what => 'retrieving list');
             }
             else {
-                X::NoDocument.new(name => $view-id, what => 'getting view for list').throw;
+                X::Sofa::NoDocument.new(name => $view-id, what => 'getting view for list').throw;
             }
         }
         else {
-            X::NoDocument.new(name => $list-name, what => "getting list").throw;
+            X::Sofa::NoDocument.new(name => $list-name, what => "getting list").throw;
         }
     }
 
@@ -380,7 +380,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
             self!post-document(Str, @design-parts, :no-type, :%form, :%params, what => 'posting update')
         }
         else {
-            X::NoDocument.new(name => $update-name, what => "posting update").throw;
+            X::Sofa::NoDocument.new(name => $update-name, what => "posting update").throw;
         }
     }
 
@@ -390,7 +390,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
             self!post-document(%content, @design-parts, :no-type, params => %params, what => 'posting update')
         }
         else {
-            X::NoDocument.new(name => $update-name, what => "posting update").throw;
+            X::Sofa::NoDocument.new(name => $update-name, what => "posting update").throw;
         }
     }
 
@@ -556,14 +556,10 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
         }
     }
 
-    class X::CantDoBoth is Exception {
-        has $.message = "Can't do both of content and form";
-    }
-
     method !post-document($document, $doc-id, Mu:U :$type = Sofa::Document, :%form, Bool :$no-type, :%params, :%headers, :$what = 'creating document') {
         # This shouldn't happen in reality but better catch a mistake
         if $document.defined && %form {
-            X::CantDoBoth.new.throw;
+            X::Sofa::CantDoBoth.new.throw;
         }
 
         my $path = self.get-local-path(path => $doc-id);

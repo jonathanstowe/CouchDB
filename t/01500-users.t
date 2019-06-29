@@ -38,7 +38,9 @@ if $sofa.is-admin {
     my $u-count = @users.elems;
     my $user;
     lives-ok { $user = Sofa::User.new(name => get-username(), password => 'zubzubzub'); }, "new user object";
-    lives-ok { $sofa.add-user($user) }, "add-user";
+    #lives-ok { 
+        $sofa.add-user($user);
+    #    }, "add-user";
     my $rev = $user.sofa-document-revision;
     ok $rev.defined, "got the revision";
     lives-ok { @users = $sofa.users }, "get the users";

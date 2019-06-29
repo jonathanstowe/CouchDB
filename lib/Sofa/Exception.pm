@@ -2,21 +2,21 @@ use v6.c;
 
 class Sofa::Exception {
 
-    class X::InvalidName is Exception {
+    class X::Sofa::InvalidName is Exception {
         has $.name;
         method message() returns Str {
             "'{$!name}' is not a valid DB name";
         }
     }
 
-    class X::DatabaseExists is Exception {
+    class X::Sofa::DatabaseExists is Exception {
         has $.name;
         method message() returns Str {
             "Database '{$!name}' already exists";
         }
     }
 
-    class X::DocumentConflict is Exception {
+    class X::Sofa::DocumentConflict is Exception {
         has $.name;
         has $.what;
         method message() returns Str {
@@ -24,14 +24,19 @@ class Sofa::Exception {
         }
     }
 
-    class X::NoDatabase is Exception {
+    class X::Sofa::NoDatabase is Exception {
         has $.name;
         method message() returns Str {
             "Database '{$!name}' does not exist";
         }
     }
 
-    class X::NoDocument is Exception {
+
+    class X::Sofa::CantDoBoth is Exception {
+        has $.message = "Can't do both of content and form";
+    }
+
+    class X::Sofa::NoDocument is Exception {
         has $.name;
         has $.what;
         method message() {
@@ -39,7 +44,7 @@ class Sofa::Exception {
         }
     }
 
-    class X::InvalidPath is Exception {
+    class X::Sofa::InvalidPath is Exception {
         has $.name;
         has $.what;
         method message() {
@@ -47,7 +52,7 @@ class Sofa::Exception {
         }
     }
 
-    class X::NotAuthorised is Exception {
+    class X::Sofa::NotAuthorised is Exception {
         has $.name;
         has $.what;
         method message() returns Str {
@@ -55,11 +60,20 @@ class Sofa::Exception {
         }
     }
 
-    class X::NoIdOrName is Exception {
+    class X::Sofa::Forbidden is Exception {
+        has $.name;
+        has $.what;
+        method message() returns Str {
+            "You are not authorised to { $!what } database '{$!name}'";
+        }
+    }
+
+
+    class X::Sofa::NoIdOrName is Exception {
         has $.message = "Cannot put a design document without a name or id";
     }
 
-    class X::SofaWTF is Exception {
+    class X::Sofa::SofaWTF is Exception {
         has $.message = "Unanticipated response";
     }
 
@@ -70,33 +84,37 @@ class Sofa::Exception {
         method !get-exception(Int() $code, $name, Str $what, ExceptionContext $context = Database) {
             given $code {
                 when 400 {
-                    X::InvalidName.new(:$name);
+                    X::Sofa::InvalidName.new(:$name);
                 }
                 when 401 {
-                    X::NotAuthorised.new(:$name, :$what);
+                    X::Sofa::NotAuthorised.new(:$name, :$what);
+                }
+                when 403 {
+                    X::Sofa::Forbidden.new(:$name, :$what);
                 }
                 when 404 {
                     given $context {
                         when Database {
-                            X::NoDatabase.new(:$name);
+                            X::Sofa::NoDatabase.new(:$name);
                         }
                         when Document {
-                            X::NoDocument.new(:$name, :$what);
+                            X::Sofa::NoDocument.new(:$name, :$what);
                         }
                         when Server {
-                            X::InvalidPath.new(:$name, :$what);
+                            X::Sofa::InvalidPath.new(:$name, :$what);
                         }
                     }
                 }
                 when 409 {
-                    X::DocumentConflict.new(:$name, :$what);
+                    X::Sofa::DocumentConflict.new(:$name, :$what);
                 }
                 when 412 {
                     # This is not actually right as 412 is more context sensitive
-                    X::DatabaseExists.new(:$name);
+                    X::Sofa::DatabaseExists.new(:$name);
                 }
                 default {
-                    X::SofaWTF.new;
+                    say $code;
+                    X::Sofa::SofaWTF.new;
                 }
             }
         }

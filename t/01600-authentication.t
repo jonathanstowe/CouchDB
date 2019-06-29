@@ -43,7 +43,7 @@ if $sofa.is-admin {
         lives-ok { $auth-client = Sofa.new(:$host, :$port, :$username, :$password, :basic-auth); }, "new client with basic auth credentials";
         my $session;
 
-        throws-like { $session = $auth-client.session() }, X::NotAuthorised, "get session for a non-existent user";
+        throws-like { $session = $auth-client.session() }, X::Sofa::NotAuthorised, "get session for a non-existent user";
 
         lives-ok { $sofa.add-user(name => $username, :$password) }, "create a new user";
 
@@ -63,7 +63,7 @@ if $sofa.is-admin {
         lives-ok { $auth-client = Sofa.new(:$host, :$port, :$username, :$password); }, "new client with cookie auth credentials";
         my $session;
 
-        throws-like { $session = $auth-client.session() }, X::NotAuthorised, "get session for a non-existent user";
+        throws-like { $session = $auth-client.session() }, X::Sofa::NotAuthorised, "get session for a non-existent user";
 
         lives-ok { $sofa.add-user(name => $username, :$password) }, "create a new user";
 
