@@ -7,7 +7,7 @@ use Sofa::Item;
 class Sofa::Session does JSON::Class is sofa-path('_session') {
     class Info does JSON::Class {
         has Str @.authentication-handlers   is json-name('authentication_handlers');
-        has Str $.authentication-db         is json-name('authentication_db');
+        has Str $.authentication-db         is json-name('authentication_db') = '_users';
         has Str $.authentication-method     is json-name('authenticated');
     }
     class UserCtx does JSON::Class {
@@ -31,4 +31,4 @@ class Sofa::Session does JSON::Class is sofa-path('_session') {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

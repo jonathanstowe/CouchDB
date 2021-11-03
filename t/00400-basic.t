@@ -1,4 +1,4 @@
-#!perl6
+#!raku6
 
 use v6;
 
@@ -40,4 +40,4 @@ isa-ok($obj.ua.base-template, URI::Template, "got the template");
 
 
 done-testing();
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

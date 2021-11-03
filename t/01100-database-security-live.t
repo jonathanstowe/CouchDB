@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku6
 
 use v6.c;
 
@@ -55,10 +55,11 @@ if $session.is-admin {
 
     ok $sec.members.defined, "members defined";
     is $sec.members.names.elems, 0, "no names";
-    is $sec.members.roles.elems, 0, "no roles";
+    # later versions add the '_admin' pseudo-role
+    is $sec.members.roles.grep( * ne '_admin').elems, 0, "no roles";
     ok $sec.admins.defined, "admins defined";
     is $sec.admins.names.elems, 0, "no names";
-    is $sec.admins.roles.elems, 0, "no roles";
+    is $sec.admins.roles.grep( * ne '_admin').elems, 0, "no roles";
 
 
     my $json = $*PROGRAM.parent.child('data/security.json').slurp;
@@ -91,4 +92,4 @@ else {
 }
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

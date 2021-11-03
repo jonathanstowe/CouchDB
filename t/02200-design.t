@@ -1,4 +1,4 @@
-#!perl6
+#!raku6
 
 use v6;
 
@@ -27,4 +27,4 @@ is $design.name, "contacts", "and we made the name right";
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

@@ -1,4 +1,4 @@
-#!perl6
+#!raku6
 
 use v6;
 use lib 'lib';
@@ -13,4 +13,4 @@ my $obj;
 lives-ok { $obj = Sofa::Config.from-json($json) }, "make a Sofa::Config from json";
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku6
 
 use v6.c;
 
@@ -102,7 +102,7 @@ if $sofa.is-admin {
     # Test for design attachments
 
     lives-ok { $doc = $db.put-design(Sofa::Design.new(name => 'contacts')) }, "put-design with name in object";
-    is $doc.id, '_design/contacts', "and the id was populated properly";
+    is $doc.id, '_design/contacts', "and the id was populated prorakuy";
 
 
     $file = $data-dir.child('sofa.jpg').open(:bin);
@@ -167,4 +167,4 @@ else {
 
 done-testing;
 
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

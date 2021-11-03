@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku6
 
 use v6.c;
 
@@ -50,7 +50,7 @@ if $sofa.is-admin {
 
     my $doc;
     lives-ok { $doc = $db.put-design(Sofa::Design.new(name => 'contacts')) }, "put-design with name in object";
-    is $doc.id, '_design/contacts', "and the id was populated properly";
+    is $doc.id, '_design/contacts', "and the id was populated prorakuy";
     my $design;
     lives-ok { $design = $db.get-design('contacts') }, "get the new design document";
     isa-ok $design, Sofa::Design, "and we got one back";
@@ -61,7 +61,7 @@ if $sofa.is-admin {
     throws-like { $db.get-design('contacts') }, X::Sofa::NoDocument, "get-design throws again as it doesn't exist";
 
     lives-ok { $doc = $db.put-design(Sofa::Design.new(),'contacts') }, "put-design with name as argument";
-    is $doc.id, '_design/contacts', "and the id was populated properly";
+    is $doc.id, '_design/contacts', "and the id was populated prorakuy";
     lives-ok { $design = $db.get-design('contacts'); }, "get the new design document";
     isa-ok $design, Sofa::Design, "and we got one back";
     is $design.sofa-document-id, $doc.id, "and it has the right id";
@@ -232,4 +232,4 @@ else {
 
 done-testing;
 
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

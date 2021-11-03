@@ -1,4 +1,4 @@
-#!perl6
+#!raku6
 
 use v6;
 
@@ -62,4 +62,4 @@ is $ret[0], '_stats', "and the path get passed correctly";
 isa-ok $ret[1], ::('Sofa::Statistics'), "and so did the type";
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

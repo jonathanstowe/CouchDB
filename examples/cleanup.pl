@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku
 
 # I made this when I was testing the library as I kept dumping empty
 # databases onto the server.  You probably want to confirm what it was
@@ -32,4 +32,4 @@ multi sub MAIN(Str :$host = 'localhost', Int :$port = 5984, Bool :$dry-run = Fal
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku

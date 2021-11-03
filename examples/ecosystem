@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku
 
 use Sofa;
 use HTTP::UserAgent;
@@ -21,4 +21,4 @@ for $data.list -> $project {
     say "Added { $project<name> } as { $doc.id }";
 }
 
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku

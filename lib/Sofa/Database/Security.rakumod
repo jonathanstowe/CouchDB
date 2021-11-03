@@ -36,4 +36,4 @@ class Sofa::Database::Security does JSON::Class is sofa-path('_security') {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

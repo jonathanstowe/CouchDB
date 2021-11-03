@@ -64,7 +64,7 @@ needed to set the admin user and password as part of the setup of the
 server, in which case you will need to set ```COUCH_USERNAME``` and
 ```COUCH_PASSWORD``` at minimum for the tests.
 
-If you have a working Rakudo Perl 6 installation then you should be
+If you have a working Rakudo installation then you should be
 able to install using *zef* (being sure to set the environment
 variables described above as required:)
 
@@ -73,9 +73,6 @@ variables described above as required:)
 Or if you have a local copy of the source code:
 
 	zef install .
-
-Though I haven't tested it, I don't see any reason why this shouldn't
-also work with some equally capable installer such as "zef".
 
 ## Support
 
@@ -98,4 +95,4 @@ https://github.com/jonathanstowe/Sofa/issues.
 
 This is free software, please see the [LICENCE](LICENCE) file for details.
 
-© Jonathan Stowe 2015, 2016, 2017
+© Jonathan Stowe 2015 - 2021

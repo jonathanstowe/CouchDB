@@ -1,4 +1,4 @@
-#!perl6
+#!raku6
 
 use v6;
 
@@ -12,4 +12,4 @@ my $obj;
 lives-ok { $obj = Sofa::Statistics.from-json($json) }, "make a Sofa::Statistics from json";
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6

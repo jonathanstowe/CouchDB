@@ -7,7 +7,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
     use Sofa::UserAgent;
     use Sofa::Database;
     use Sofa::User;
-    
+
 
     has Sofa::UserAgent $.ua is rw;
     has Int  $.port is rw = 5984;
@@ -25,7 +25,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     method ua() returns Sofa::UserAgent is rw {
         if not $!ua.defined {
-            $!ua = Sofa::UserAgent.new(host => $!host, port => $!port, secure => $!secure);
+            $!ua = Sofa::UserAgent.new(host => $!host, port => $!port, secure => $!secure,);
             if self!use-basic-auth {
                 $!ua.auth($!username, $!password);
             }
@@ -148,4 +148,4 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     method server-details() is sofa-item('Sofa::Server') { * }
 }
-# vim: expandtab shiftwidth=4 ft=perl6
+# vim: expandtab shiftwidth=4 ft=raku6
