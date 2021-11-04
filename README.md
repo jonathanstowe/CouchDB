@@ -2,8 +2,6 @@
 
 Raku interface for CouchDB
 
-[![Build Status](https://travis-ci.org/jonathanstowe/Sofa.svg?branch=master)](https://travis-ci.org/jonathanstowe/Sofa)
-
 ## Synopsis
 
 ```
