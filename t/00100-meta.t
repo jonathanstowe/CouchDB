@@ -1,4 +1,4 @@
-#!raku6
+#!raku
 
 use v6;
 use lib 'lib';
@@ -13,4 +13,4 @@ meta-ok();
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

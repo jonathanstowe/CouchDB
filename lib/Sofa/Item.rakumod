@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 module Sofa::Item {
     role MetamodelX::ClassHOW {
@@ -20,4 +20,4 @@ my package EXPORTHOW {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

@@ -1,5 +1,5 @@
 
-use v6.c;
+use v6;
 
 use JSON::Name;
 use JSON::Class;
@@ -20,4 +20,4 @@ role Sofa::Document::All[::RealRow] does JSON::Class {
     has Int     $.offset                                    = 0;
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

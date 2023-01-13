@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 use JSON::Name;
 use JSON::Class;
@@ -37,4 +37,4 @@ class Sofa::User does JSON::Class does Sofa::Document::Wrapper {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

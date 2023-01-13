@@ -1,4 +1,4 @@
-#!raku6
+#!raku
 
 use v6;
 
@@ -82,4 +82,4 @@ for @valid-tests -> $test {
 }
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

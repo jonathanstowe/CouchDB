@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 use JSON::Class:ver(v0.0.5+);
 
 class Sofa::Document does JSON::Class {
@@ -7,4 +7,4 @@ class Sofa::Document does JSON::Class {
     has Bool $.ok;
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

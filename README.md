@@ -93,4 +93,4 @@ https://github.com/jonathanstowe/Sofa/issues.
 
 This is free software, please see the [LICENCE](LICENCE) file for details.
 
-© Jonathan Stowe 2015 - 2021
+© Jonathan Stowe 2015 - 2023

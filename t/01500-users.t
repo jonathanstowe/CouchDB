@@ -1,4 +1,4 @@
-#!/usr/bin/env raku6
+#!/usr/bin/env raku
 
 use v6.c;
 
@@ -81,4 +81,4 @@ sub get-username() {
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

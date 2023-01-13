@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 use JSON::Class;
 
@@ -14,4 +14,4 @@ class Sofa::Document::Attachment does JSON::Class {
 }
 
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

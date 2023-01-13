@@ -618,4 +618,4 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

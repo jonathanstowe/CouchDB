@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 use JSON::Name;
 use JSON::Class:ver(v0.0.5+);
@@ -19,4 +19,4 @@ class Sofa::Server does JSON::Class is sofa-path('') {
         self.from-json($json);
     }
 }
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

@@ -1,4 +1,4 @@
-#!raku6
+#!raku
 
 use v6;
 
@@ -22,4 +22,4 @@ is Bar.HOW.sofa-path, '_bar', "and the sofa-item is what we expected";
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

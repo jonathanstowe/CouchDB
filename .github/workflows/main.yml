@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  test:
+    name: Test ${{ matrix.couchdb }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        couchdb: ["3.1", "2.3"]
+
+    container:
+      image: rakudo-star:latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Start CouchDB
+      uses: iamssen/couchdb-github-action@master
+      with:
+          couchdb-version: ${{ matrix.couchdb }}
+
+
+    - name: Raku version
+      run: raku -v
+
+    - name: Install dependencies
+      run: zef install --deps-only --/test --test-depends .
+
+    - name: Run tests
+      run: zef test -v --debug .
+      env:
+        COUCH_HOST:     127.0.0.1
+        COUCH_USERNAME: admin
+        COUCH_PASSWORD: password
+        SOFA_TEST_CHANGES: 1

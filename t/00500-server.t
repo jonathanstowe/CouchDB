@@ -1,4 +1,4 @@
-#!raku6
+#!raku
 
 use v6.c;
 
@@ -30,4 +30,4 @@ is($obj.vendor.version, Version.new($json_p<vendor><version>), "version is right
 
 
 done-testing();
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

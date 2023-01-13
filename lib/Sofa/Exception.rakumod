@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 class Sofa::Exception {
 
@@ -121,4 +121,4 @@ class Sofa::Exception {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

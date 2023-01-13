@@ -173,4 +173,4 @@ class Sofa::Config does JSON::Class is sofa-path('_config') {
     has HttpdDbHandlers $.httpd_db_handlers;
     has CompactionDaemon $.compaction_daemon;
 }
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

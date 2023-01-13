@@ -66,4 +66,4 @@ class Sofa::Statistics does JSON::Class is sofa-path('_stats') {
     has Httpd $.httpd;
     has HttpdStatusCodes $.httpd_status_codes;
 }
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

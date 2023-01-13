@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 use JSON::Name;
 use JSON::Class;
@@ -31,4 +31,4 @@ class Sofa::Session does JSON::Class is sofa-path('_session') {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

@@ -1,4 +1,4 @@
-#!raku6
+#!raku
 
 use v6.c;
 
@@ -27,4 +27,4 @@ is $obj.generate-id, "org.couchdb.user:$name", "and generate-id works okay";
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

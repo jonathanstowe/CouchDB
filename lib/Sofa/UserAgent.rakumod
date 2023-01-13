@@ -1,4 +1,4 @@
-use v6.c;
+use v6;
 
 use URI::Template;
 use HTTP::Request::Common;
@@ -103,4 +103,4 @@ class Sofa::UserAgent is HTTP::UserAgent {
     }
 }
 
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku

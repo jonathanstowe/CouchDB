@@ -148,4 +148,4 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     method server-details() is sofa-item('Sofa::Server') { * }
 }
-# vim: expandtab shiftwidth=4 ft=raku6
+# vim: expandtab shiftwidth=4 ft=raku
