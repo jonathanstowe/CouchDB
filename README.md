@@ -2,6 +2,8 @@
 
 Raku interface for CouchDB
 
+[![CI](https://github.com/jonathanstowe/Sofa/actions/workflows/main.yml/badge.svg)](https://github.com/jonathanstowe/Sofa/actions/workflows/main.yml)
+
 ## Synopsis
 
 ```
