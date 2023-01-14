@@ -19,7 +19,7 @@ class Sofa::Database::Security does JSON::Class is sofa-path('_security') {
 
     has Admins  $.admins;
 
-    method admins() returns Admins is rw {
+    method admins( --> Admins ) is rw {
         if not $!admins.defined {
             $!admins = Admins.new;
         }
@@ -28,7 +28,7 @@ class Sofa::Database::Security does JSON::Class is sofa-path('_security') {
 
     has Members $.members;
 
-    method members() returns Members is rw {
+    method members( --> Members ) is rw {
         if not $!members.defined {
             $!members = Members.new;
         }

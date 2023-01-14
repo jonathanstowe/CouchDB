@@ -6,7 +6,7 @@ use Sofa::Item;
 
 class Sofa::Statistics does JSON::Class is sofa-path('_stats') {
 
-    sub rat-safe($value) returns Rat {
+    sub rat-safe($value --> Rat ) {
         my Rat $ret;
         if $value.defined {
             $ret = Rat($value);

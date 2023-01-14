@@ -4,14 +4,14 @@ class Sofa::Exception {
 
     class X::Sofa::InvalidName is Exception {
         has $.name;
-        method message() returns Str {
+        method message( --> Str ) {
             "'{$!name}' is not a valid DB name";
         }
     }
 
     class X::Sofa::DatabaseExists is Exception {
         has $.name;
-        method message() returns Str {
+        method message( --> Str ) {
             "Database '{$!name}' already exists";
         }
     }
@@ -19,14 +19,14 @@ class Sofa::Exception {
     class X::Sofa::DocumentConflict is Exception {
         has $.name;
         has $.what;
-        method message() returns Str {
+        method message( --> Str ) {
             "There was a conflict while { $!what } document '{$!name}'";
         }
     }
 
     class X::Sofa::NoDatabase is Exception {
         has $.name;
-        method message() returns Str {
+        method message( --> Str ) {
             "Database '{$!name}' does not exist";
         }
     }
@@ -55,7 +55,7 @@ class Sofa::Exception {
     class X::Sofa::NotAuthorised is Exception {
         has $.name;
         has $.what;
-        method message() returns Str {
+        method message( --> Str ) {
             "You are not authorised to { $!what } database '{$!name}'";
         }
     }
@@ -63,7 +63,7 @@ class Sofa::Exception {
     class X::Sofa::Forbidden is Exception {
         has $.name;
         has $.what;
-        method message() returns Str {
+        method message( --> Str ) {
             "You are not authorised to { $!what } database '{$!name}'";
         }
     }

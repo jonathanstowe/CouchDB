@@ -18,15 +18,15 @@ class Sofa::Session does JSON::Class is sofa-path('_session') {
     has UserCtx $.user-context   is json-name('userCtx');
     has Bool    $.ok;
 
-    method is-admin() returns Bool {
+    method is-admin( --> Bool ) {
         $!user-context.defined ?? so $!user-context.roles.grep(/^_admin$/) !! False;
     }
 
-    method is-authenticated() returns Bool {
+    method is-authenticated( --> Bool ) {
         $!user-context.defined ?? $!user-context.name.defined !! False;
     }
 
-    method is-admin-party() returns Bool {
+    method is-admin-party( --> Bool ) {
         self.is-admin && !self.is-authenticated;
     }
 }

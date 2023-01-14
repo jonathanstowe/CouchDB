@@ -23,7 +23,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     has Sofa::Database @.databases;
 
-    method ua() returns Sofa::UserAgent is rw {
+    method ua( --> Sofa::UserAgent ) is rw {
         if not $!ua.defined {
             $!ua = Sofa::UserAgent.new(host => $!host, port => $!port, secure => $!secure,);
             if self!use-basic-auth {
@@ -36,11 +36,11 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
         $!ua;
     }
 
-    method !got-auth() returns Bool {
+    method !got-auth( --> Bool ) {
         $!username.defined && $!password.defined;
     }
 
-    method !use-basic-auth() returns Bool {
+    method !use-basic-auth( --> Bool ) {
         self!got-auth && $!basic-auth;
     }
 
@@ -92,12 +92,12 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
         $db;
     }
 
-    method get-database(Str $name) returns Sofa::Database {
+    method get-database(Str $name --> Sofa::Database ) {
         @.databases.grep({$_.name eq $name}).first;
     }
 
     has Sofa::Database $.user-db;
-    method user-db() returns Sofa::Database {
+    method user-db( --> Sofa::Database ) {
         if not $!user-db.defined {
             $!user-db = self.get-database('_users');
         }
@@ -110,7 +110,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
 
     proto method add-user(|c) { * }
 
-    multi method add-user(Str :$name!, Str :$password, :@roles) returns Sofa::User {
+    multi method add-user(Str :$name!, Str :$password, :@roles --> Sofa::User ) {
         my $user = Sofa::User.new(:$name, :$password, :@roles);
         self.add-user($user);
         $user;
@@ -120,7 +120,7 @@ class Sofa:auth<github:jonathanstowe>:ver<0.0.1> does Sofa::Exception::Handler {
         self.user-db.create-document($user.generate-id, $user);
     }
 
-    method get-user(Str $name) returns Sofa::User {
+    method get-user(Str $name --> Sofa::User ) {
         my $id = Sofa::User.generate-id($name);
         self.user-db.get-document($id, Sofa::User);
     }

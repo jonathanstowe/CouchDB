@@ -13,7 +13,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     use Sofa::Design;
     use Sofa::Database::Security;
 
-    sub microsecs-to-dt($val) returns DateTime {
+    sub microsecs-to-dt($val --> DateTime ) {
         DateTime.new(($val.Numeric/1000000).Int);
     }
 
@@ -45,7 +45,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
     }
 
 
-    method fetch(Sofa::Database:U: Str :$name!, Sofa::UserAgent :$ua!) returns Sofa::Database {
+    method fetch(Sofa::Database:U: Str :$name!, Sofa::UserAgent :$ua! --> Sofa::Database ) {
         my $db;
 
         my $response = $ua.get(path => $name);
@@ -60,7 +60,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
         $db;
     }
 
-    method create(Sofa::Database:U: Str :$name!, Sofa::UserAgent :$ua!) returns Sofa::Database {
+    method create(Sofa::Database:U: Str :$name!, Sofa::UserAgent :$ua! --> Sofa::Database ) {
         my $db;
 
         if self.is-valid-name($name) {
@@ -161,21 +161,21 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method create-document(|c) { * }
 
-    multi method create-document(Sofa::Database:D: %document) returns Sofa::Document {
+    multi method create-document(Sofa::Database:D: %document --> Sofa::Document ) {
         self!post-document(%document, Str, what => 'creating document');
     }
 
-    multi method create-document(Sofa::Database:D: Str $doc-id, %document) returns Sofa::Document {
+    multi method create-document(Sofa::Database:D: Str $doc-id, %document --> Sofa::Document ) {
         self!put-document(%document, $doc-id, what => "creating document");
     }
 
-    multi method create-document(Sofa::Database:D: JSON::Class $document) returns Sofa::Document {
+    multi method create-document(Sofa::Database:D: JSON::Class $document --> Sofa::Document ) {
         sink $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
         self!post-document($document, Str, what => 'creating document');
     }
 
 
-    multi method create-document(Sofa::Database:D: Str $doc-id, JSON::Class $document) returns Sofa::Document {
+    multi method create-document(Sofa::Database:D: Str $doc-id, JSON::Class $document --> Sofa::Document ) {
         sink $document does Sofa::Document::Wrapper unless $document ~~ Sofa::Document::Wrapper;
         self!put-document($document, $doc-id, what => 'creating document' );
     }
@@ -197,11 +197,11 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method put-design(|c) { * }
 
-    multi method put-design(Sofa::Database:D: NamedDesign $doc ) returns Sofa::Document {
+    multi method put-design(Sofa::Database:D: NamedDesign $doc  --> Sofa::Document ) {
         self!put-document($doc, $doc.id-or-name, $doc.sofa-document-revision, what => 'putting design document');
     }
 
-    multi method put-design(Sofa::Database:D: NoNameDesign $doc, Str:D $doc-id ) returns Sofa::Document {
+    multi method put-design(Sofa::Database:D: NoNameDesign $doc, Str:D $doc-id  --> Sofa::Document ) {
         self!put-document($doc, design-id($doc-id), $doc.sofa-document-revision, what => 'putting design document');
     }
 
@@ -213,21 +213,21 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method get-design(|c) { * }
 
-    multi method get-design(Sofa::Database:D:  Sofa::Document:D $doc) returns Sofa::Design {
+    multi method get-design(Sofa::Database:D:  Sofa::Document:D $doc --> Sofa::Design ) {
         self.get-design($doc.id);
     }
 
-    multi method get-design(Sofa::Database:D: Str $doc-id) returns Sofa::Design {
+    multi method get-design(Sofa::Database:D: Str $doc-id --> Sofa::Design ) {
         self!get-document(design-id($doc-id), type => Sofa::Design, what => 'getting design');
     }
 
     proto method add-design-attachment(|c) { * }
 
-    multi method add-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, $content ) returns Sofa::Document {
+    multi method add-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, $content  --> Sofa::Document ) {
         self.add-document-attachment($doc, $attachment-name, $content-type, $content);
     }
 
-    multi method add-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name, Str $content-type, $content ) returns Sofa::Document {
+    multi method add-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name, Str $content-type, $content  --> Sofa::Document ) {
         self.add-document-attachment($design.sofa-document-id, $design.sofa-document-revision, $attachment-name, $content-type, $content);
     }
 
@@ -248,11 +248,11 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method delete-design-attachment(|c) { * }
 
-    multi method delete-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name) returns Sofa::Document {
+    multi method delete-design-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name --> Sofa::Document ) {
         self.delete-document-attachment($doc, $attachment-name);
     }
 
-    multi method delete-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name) returns Sofa::Document {
+    multi method delete-design-attachment(Sofa::Database:D: Sofa::Design:D $design, Str $attachment-name --> Sofa::Document ) {
         self.delete-document-attachment($design.sofa-document-id, $design.sofa-document-revision, $attachment-name);
     }
 
@@ -267,7 +267,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
         has Row @.rows;
     }
 
-    sub stringify-key($key) returns Str {
+    sub stringify-key($key --> Str ) {
         '"' ~ $key.Str ~ '"';
     }
 
@@ -396,10 +396,10 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method delete-design(|c) { * }
 
-    multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc) returns Sofa::Document {
+    multi method delete-design(Sofa::Database:D: Sofa::Document:D $doc --> Sofa::Document ) {
         self!delete-document(design-id($doc.id), $doc.rev, what => 'deleting design');
     }
-    multi method delete-design(Sofa::Database:D: Sofa::Design:D $doc ) returns Sofa::Document {
+    multi method delete-design(Sofa::Database:D: Sofa::Design:D $doc  --> Sofa::Document ) {
         self!delete-document($doc.id-or-name, $doc.sofa-document-revision, what => 'deleting design');
     }
 
@@ -425,52 +425,52 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method update-document(|c) { * }
 
-    multi method update-document(Sofa::Database:D: Sofa::Document:D $doc, %document ) returns Sofa::Document {
+    multi method update-document(Sofa::Database:D: Sofa::Document:D $doc, %document  --> Sofa::Document ) {
         self.update-document($doc.id, $doc.rev, %document);
     }
 
-    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document) returns Sofa::Document {
+    multi method update-document(Sofa::Database:D: Str $doc-id, Str $doc-rev, %document --> Sofa::Document ) {
         self!put-document(%document, $doc-id, $doc-rev);
     }
 
-    multi method update-document(Sofa::Database:D: Sofa::Document::Wrapper $document) returns Sofa::Document {
+    multi method update-document(Sofa::Database:D: Sofa::Document::Wrapper $document --> Sofa::Document ) {
         self!put-document($document, $document.sofa-document-id, $document.sofa-document-revision);
     }
 
     proto method add-document-attachment(|c) { * }
 
-    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, Blob $content) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, Blob $content --> Sofa::Document ) {
         self.add-document-attachment($doc.id, $doc.rev, $attachment-name, $content-type, $content);
     }
 
 
-    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, Str $file) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, Str $file --> Sofa::Document ) {
         self.add-document-attachment($doc.id, $doc.rev, $attachment-name, $content-type, $file);
     }
 
-    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Str $file) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Str $file --> Sofa::Document ) {
         self.add-document-attachment($doc-id, $doc-rev, $attachment-name, $content-type, $file.IO);
     }
 
-    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, IO::Path $file) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, IO::Path $file --> Sofa::Document ) {
         self.add-document-attachment($doc.id, $doc.rev, $attachment-name, $content-type, $file);
     }
 
-    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, IO::Path $file) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, IO::Path $file --> Sofa::Document ) {
         my $handle = $file.open(:r, :bin);
         self.add-document-attachment($doc-id, $doc-rev, $attachment-name, $content-type, $handle);
     }
 
-    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, IO::Handle $file) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Sofa::Document:D $doc, Str $attachment-name, Str $content-type, IO::Handle $file --> Sofa::Document ) {
         self.add-document-attachment($doc.id, $doc.rev, $attachment-name, $content-type, $file);
     }
 
-    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, IO::Handle $file) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, IO::Handle $file --> Sofa::Document ) {
         my $content = $file.slurp-rest(:bin);
         self.add-document-attachment($doc-id, $doc-rev, $attachment-name, $content-type, $content);
     }
 
-    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Blob $content) returns Sofa::Document {
+    multi method add-document-attachment(Sofa::Database:D: Str $doc-id, Str $doc-rev, Str $attachment-name, Str $content-type, Blob $content --> Sofa::Document ) {
         my %headers = Content-Type => $content-type;
         self!put-document($content, [$doc-id, $attachment-name ], $doc-rev, :%headers, what => 'adding attachment');
     }
@@ -500,21 +500,21 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
 
     proto method delete-document(|c) { * }
 
-    multi method delete-document(Sofa::Database:D: Sofa::Document::Wrapper:D $doc) returns Sofa::Document {
+    multi method delete-document(Sofa::Database:D: Sofa::Document::Wrapper:D $doc --> Sofa::Document ) {
         self.delete-document($doc.sofa-document-id, $doc.sofa-document-revision);
     }
 
-    multi method delete-document(Sofa::Database:D: Sofa::Document:D $doc ) returns Sofa::Document {
+    multi method delete-document(Sofa::Database:D: Sofa::Document:D $doc  --> Sofa::Document ) {
         self.delete-document($doc.id, $doc.rev);
     }
 
-    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev) returns Sofa::Document {
+    multi method delete-document(Sofa::Database:D: Str $doc-id, Str $doc-rev --> Sofa::Document ) {
         self!delete-document($doc-id, $doc-rev);
     }
 
     proto method delete(|c) { * }
 
-    multi method delete(Sofa::Database:U: Str :$name!, :$ua!) returns Bool {
+    multi method delete(Sofa::Database:U: Str :$name!, :$ua! --> Bool ) {
         my $response = $ua.delete(path => $name);
         if not $response.is-success {
             self!get-exception($response.code, $name, 'delete').throw;
@@ -522,7 +522,7 @@ class Sofa::Database does JSON::Class does Sofa::Exception::Handler {
         True;
     }
 
-    multi method delete(Sofa::Database:D:) returns Bool {
+    multi method delete(Sofa::Database:D: --> Bool ) {
         my $a = Sofa::Database.delete(name => $!name, ua => $!ua);
         $!delete-promise.keep if $a;
         $a;
